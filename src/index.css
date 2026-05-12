@@ -211,7 +211,8 @@ a {
   flex-shrink: 0;
 }
 
-.dropdown--open .dropdown__arrow {
+.dropdown--open .dropdown__arrow,
+.dropdown__arrow--open {
   transform: rotate(180deg);
 }
 

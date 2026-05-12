@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from './Header';
 import RestaurantCard from './RestaurantCard';
+import PrecioDropdown from './PrecioDropdown';
 
 const restaurantes = [
   {
@@ -150,17 +151,7 @@ function App() {
             <div className="search-bar__divider"></div>
             <div className="search-bar__field">
               <span className="search-bar__icon">💶</span>
-              <select
-                className="select-precio"
-                value={precio}
-                onChange={e => setPrecio(e.target.value)}
-                style={{ border: 'none', outline: 'none', fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', background: 'transparent', cursor: 'pointer', width: '100%' }}
-              >
-                <option value="">Precio máx.</option>
-                <option value="1">€ — Económico</option>
-                <option value="2">€€ — Precio medio</option>
-                <option value="3">€€€ — Especial</option>
-              </select>
+              <PrecioDropdown value={precio} onChange={setPrecio} />
             </div>
             <button className="btn btn--primary search-bar__btn" onClick={buscar}>Buscar</button>
           </div>

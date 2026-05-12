@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Header from './Header';
 import RestaurantCard from './RestaurantCard';
 
@@ -94,17 +95,141 @@ const restaurantes = [
   },
 ];
 
+const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Italiana", "Mediterránea", "Tapas", "Brunch"];
+
 function App() {
+  const [ciudad, setCiudad] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [precio, setPrecio] = useState("");
+  const [chipActivo, setChipActivo] = useState("Todo");
+  const [hasBuscado, setHasBuscado] = useState(false);
+  const [restauranteActivo, setRestauranteActivo] = useState(null);
+
+  const filtrados = restaurantes.filter(r => {
+    const coincideCiudad = ciudad === "" || r.ciudad.toLowerCase().includes(ciudad.toLowerCase()) || r.barrio.toLowerCase().includes(ciudad.toLowerCase());
+    const coincideTipo = tipo === "" || r.tipo.some(t => t.toLowerCase().includes(tipo.toLowerCase()));
+    const coincidePrecio = precio === "" || r.precio <= parseInt(precio);
+    const coincideChip = chipActivo === "Todo" || r.tipo.includes(chipActivo);
+    return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;
+  });
+
+  function buscar() {
+    setHasBuscado(true);
+  }
+
   return (
     <div>
       <Header />
-      <main className="container results">
-        <div className="cards-grid">
-          {restaurantes.map((r, i) => (
-            <RestaurantCard key={i} restaurante={r} onClick={() => {}} />
+
+      <section className="hero">
+        <div className="container hero__inner">
+          <h1 className="hero__title">Descubre dónde comer,<br />sin saber qué buscar.</h1>
+          <p className="hero__subtitle">Pon tus filtros y Trovi te muestra los mejores sitios que aún no conoces.</p>
+          <div className="search-bar">
+            <div className="search-bar__field">
+              <span className="search-bar__icon">📍</span>
+              <input
+                type="text"
+                placeholder="Ciudad o zona"
+                value={ciudad}
+                onChange={e => setCiudad(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && buscar()}
+              />
+            </div>
+            <div className="search-bar__divider"></div>
+            <div className="search-bar__field">
+              <span className="search-bar__icon">🍽️</span>
+              <input
+                type="text"
+                placeholder="Tipo de comida"
+                value={tipo}
+                onChange={e => setTipo(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && buscar()}
+              />
+            </div>
+            <div className="search-bar__divider"></div>
+            <div className="search-bar__field">
+              <span className="search-bar__icon">💶</span>
+              <select
+                className="select-precio"
+                value={precio}
+                onChange={e => setPrecio(e.target.value)}
+                style={{ border: 'none', outline: 'none', fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', background: 'transparent', cursor: 'pointer', width: '100%' }}
+              >
+                <option value="">Precio máx.</option>
+                <option value="1">€ — Económico</option>
+                <option value="2">€€ — Precio medio</option>
+                <option value="3">€€€ — Especial</option>
+              </select>
+            </div>
+            <button className="btn btn--primary search-bar__btn" onClick={buscar}>Buscar</button>
+          </div>
+        </div>
+      </section>
+
+      <section className="filters">
+        <div className="container filters__inner">
+          {CHIPS.map(chip => (
+            <button
+              key={chip}
+              className={`filter-chip${chipActivo === chip ? ' filter-chip--active' : ''}`}
+              onClick={() => { setChipActivo(chip); setHasBuscado(true); }}
+            >
+              {chip}
+            </button>
           ))}
         </div>
+      </section>
+
+      <main className="container results">
+        {!hasBuscado ? (
+          <div className="welcome-state">
+            <span className="welcome-state__icon">🗺️</span>
+            <h2>¿Dónde comemos hoy?</h2>
+            <p>Usa los filtros de arriba para descubrir sitios que no conocías.<br />Ciudad, tipo de comida, precio — tú decides.</p>
+            <div className="welcome-state__hints">
+              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>📍 Por ciudad</button>
+              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>🍽️ Por tipo</button>
+              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>💶 Por precio</button>
+            </div>
+          </div>
+        ) : filtrados.length === 0 ? (
+          <div className="empty-state">
+            <span className="empty-state__icon">🍽️</span>
+            <h3>Sin resultados</h3>
+            <p>No hemos encontrado sitios con esos filtros. Prueba a cambiar la ciudad o el tipo de comida.</p>
+          </div>
+        ) : (
+          <div className="cards-grid">
+            {filtrados.map((r, i) => (
+              <RestaurantCard key={i} restaurante={r} onClick={() => setRestauranteActivo(r)} />
+            ))}
+          </div>
+        )}
       </main>
+
+      {restauranteActivo && (
+        <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setRestauranteActivo(null)}>
+          <div className="modal">
+            <button className="modal__close" onClick={() => setRestauranteActivo(null)}>✕</button>
+            <div className="modal__image">{restauranteActivo.emoji}</div>
+            <div className="modal__body">
+              <div className="modal__tags">
+                {restauranteActivo.tipo.map(t => <span key={t} className="card__tag">{t}</span>)}
+              </div>
+              <h2 className="modal__nombre">{restauranteActivo.nombre}</h2>
+              <p className="modal__rating">★ {restauranteActivo.valoracion} · {restauranteActivo.numValoraciones} valoraciones · {restauranteActivo.barrio}, {restauranteActivo.ciudad}</p>
+              <p className="modal__gancho">"{restauranteActivo.porQueIr}"</p>
+              <p className="modal__descripcion">{restauranteActivo.descripcion}</p>
+              <div className="modal__info">
+                <div className="modal__info-item"><span>📍</span><span>{restauranteActivo.direccion}</span></div>
+                <div className="modal__info-item"><span>🕐</span><span>{restauranteActivo.horario}</span></div>
+                <div className="modal__info-item"><span>💶</span><span>Precio medio por persona: {restauranteActivo.precioMedio}€</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

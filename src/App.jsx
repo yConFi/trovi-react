@@ -163,7 +163,10 @@ function App() {
           <p className="hero__subtitle">Pon tus filtros y Trovi te muestra los mejores sitios que aún no conoces.</p>
           <div className="search-bar">
             <div className="search-bar__field">
-              <span className="search-bar__icon">📍</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5"/>
+              </svg>
               <input
                 type="text"
                 placeholder="Ciudad o zona"
@@ -174,7 +177,11 @@ function App() {
             </div>
             <div className="search-bar__divider"></div>
             <div className="search-bar__field">
-              <span className="search-bar__icon">🍽️</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+                <path d="M7 2v20"/>
+                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+              </svg>
               <input
                 type="text"
                 placeholder="Tipo de comida"
@@ -185,7 +192,11 @@ function App() {
             </div>
             <div className="search-bar__divider"></div>
             <div className="search-bar__field">
-              <span className="search-bar__icon">💶</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M14.5 9a3.5 3.5 0 0 0-5 0 3.5 3.5 0 0 0 0 6 3.5 3.5 0 0 0 5 0"/>
+                <path d="M12 6v2m0 8v2"/>
+              </svg>
               <PrecioDropdown value={precio} onChange={setPrecio} />
             </div>
             <button className="btn btn--primary search-bar__btn" onClick={buscar}>Buscar</button>

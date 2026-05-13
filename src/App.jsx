@@ -193,9 +193,9 @@ function App() {
             <div className="search-bar__divider"></div>
             <div className="search-bar__field">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M14.5 9a3.5 3.5 0 0 0-5 0 3.5 3.5 0 0 0 0 6 3.5 3.5 0 0 0 5 0"/>
-                <path d="M12 6v2m0 8v2"/>
+                <path d="M17 6.5A7 7 0 1 0 17 17.5"/>
+                <path d="M4 10h10"/>
+                <path d="M4 14h10"/>
               </svg>
               <PrecioDropdown value={precio} onChange={setPrecio} />
             </div>

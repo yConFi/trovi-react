@@ -58,7 +58,7 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito }) {
                   restaurante={r}
                   esFavorito={favoritos.includes(r.id)}
                   onToggleFavorito={() => onToggleFavorito(r.id)}
-                  onClick={() => {}}
+                  onClick={() => onClose()}
                 />
               ))}
             </div>

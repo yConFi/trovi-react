@@ -19,6 +19,16 @@ function AdminPanel({ onClose }) {
     setCargando(false);
   }
 
+  async function notificar(email, nombre, estado) {
+    try {
+      await supabase.functions.invoke('notificar-propuesta', {
+        body: { email, nombre, estado },
+      });
+    } catch (e) {
+      console.error('Error enviando notificación:', e);
+    }
+  }
+
   async function aprobar(propuesta) {
     const tipoArray = propuesta.tipo
       ? propuesta.tipo.split(',').map(t => t.trim()).filter(Boolean)
@@ -41,12 +51,14 @@ function AdminPanel({ onClose }) {
     });
 
     await supabase.from('propuestas').update({ estado: 'aprobado' }).eq('id', propuesta.id);
+    if (propuesta.user_email) await notificar(propuesta.user_email, propuesta.nombre, 'aprobado');
     setPropuestas(prev => prev.filter(p => p.id !== propuesta.id));
   }
 
-  async function rechazar(id) {
-    await supabase.from('propuestas').update({ estado: 'rechazado' }).eq('id', id);
-    setPropuestas(prev => prev.filter(p => p.id !== id));
+  async function rechazar(propuesta) {
+    await supabase.from('propuestas').update({ estado: 'rechazado' }).eq('id', propuesta.id);
+    if (propuesta.user_email) await notificar(propuesta.user_email, propuesta.nombre, 'rechazado');
+    setPropuestas(prev => prev.filter(p => p.id !== propuesta.id));
   }
 
   const rowStyle = {
@@ -104,7 +116,7 @@ function AdminPanel({ onClose }) {
                   <button
                     className="btn btn--outline"
                     style={{ padding: '8px 20px', fontSize: '0.85rem', color: '#ef4444', borderColor: '#fca5a5' }}
-                    onClick={() => rechazar(p.id)}
+                    onClick={() => rechazar(p)}
                   >
                     ✕ Rechazar
                   </button>

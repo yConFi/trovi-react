@@ -25,6 +25,7 @@ function PropuestaModal({ usuario, onClose }) {
       descripcion,
       direccion,
       user_id: usuario.id,
+      user_email: usuario.email,
     });
 
     if (error) {

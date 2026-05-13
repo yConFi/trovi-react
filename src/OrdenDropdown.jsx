@@ -32,7 +32,7 @@ function OrdenDropdown({ value, onChange }) {
         <span className={`dropdown__arrow${abierto ? " dropdown__arrow--open" : ""}`}>▾</span>
       </button>
       {abierto && (
-        <ul className="dropdown__menu" style={{ display: 'block' }}>
+        <ul className="dropdown__menu" style={{ display: 'block', left: 'auto', right: 0 }}>
           {opciones.map(opcion => (
             <li
               key={opcion.value}

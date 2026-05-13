@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Header from './Header';
 import RestaurantCard from './RestaurantCard';
 import PrecioDropdown from './PrecioDropdown';
+import AuthModal from './AuthModal';
 import { supabase } from './supabase';
 
 const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Italiana", "Mediterránea", "Tapas", "Brunch"];
@@ -9,12 +10,24 @@ const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Ital
 function App() {
   const [restaurantes, setRestaurantes] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [usuario, setUsuario] = useState(null);
+  const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [ciudad, setCiudad] = useState("");
   const [tipo, setTipo] = useState("");
   const [precio, setPrecio] = useState("");
   const [chipActivo, setChipActivo] = useState("Todo");
   const [hasBuscado, setHasBuscado] = useState(false);
   const [restauranteActivo, setRestauranteActivo] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUsuario(data.session?.user ?? null);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUsuario(session?.user ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     async function cargarRestaurantes() {
@@ -59,7 +72,11 @@ function App() {
 
   return (
     <div>
-      <Header />
+      <Header
+        usuario={usuario}
+        onLoginClick={() => setModalAuthAbierto(true)}
+        onLogout={() => supabase.auth.signOut()}
+      />
 
       <section className="hero">
         <div className="container hero__inner">
@@ -142,6 +159,13 @@ function App() {
           </div>
         )}
       </main>
+
+      {modalAuthAbierto && (
+        <AuthModal
+          onClose={() => setModalAuthAbierto(false)}
+          onAuth={setUsuario}
+        />
+      )}
 
       {restauranteActivo && (
         <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setRestauranteActivo(null)}>

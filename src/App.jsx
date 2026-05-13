@@ -291,6 +291,17 @@ function App() {
                 <div className="modal__info-item"><span>📍</span><span>{restauranteActivo.direccion}</span></div>
                 <div className="modal__info-item"><span>🕐</span><span>{restauranteActivo.horario}</span></div>
                 <div className="modal__info-item"><span>💶</span><span>Precio medio por persona: {restauranteActivo.precioMedio}€</span></div>
+                <div className="modal__info-item">
+                  <span>🗺️</span>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restauranteActivo.nombre} ${restauranteActivo.direccion || restauranteActivo.ciudad}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#ff5c3a', fontWeight: 600, textDecoration: 'underline' }}
+                  >
+                    Ver en Google Maps
+                  </a>
+                </div>
               </div>
 
               <ValoracionEstrellas

@@ -29,6 +29,7 @@ function App() {
   const [chipActivo, setChipActivo] = useState("Todo");
   const [hasBuscado, setHasBuscado] = useState(false);
   const [restauranteActivo, setRestauranteActivo] = useState(null);
+  const [orden, setOrden] = useState("valoracion");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -118,6 +119,7 @@ function App() {
           precioMedio: r.precio_medio,
           precio: r.precio,
           fotoUrl: r.foto_url,
+          creadoEn: r.created_at,
         }));
         setRestaurantes(mapeados);
       }
@@ -132,6 +134,10 @@ function App() {
     const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
     const coincideChip = chipActivo === "Todo" || r.tipo.includes(chipActivo);
     return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;
+  }).sort((a, b) => {
+    if (orden === "valoracion") return (parseFloat(b.valoracion) || 0) - (parseFloat(a.valoracion) || 0);
+    if (orden === "nuevos") return new Date(b.creadoEn) - new Date(a.creadoEn);
+    return 0;
   });
 
   function buscar() {
@@ -201,6 +207,28 @@ function App() {
       </section>
 
       <main className="container results">
+        {hasBuscado && filtrados.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+            <select
+              value={orden}
+              onChange={e => setOrden(e.target.value)}
+              style={{
+                border: '1.5px solid #e5e7eb',
+                borderRadius: 10,
+                padding: '8px 14px',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '0.85rem',
+                color: '#4b5563',
+                background: 'white',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value="valoracion">Mejor valorados</option>
+              <option value="nuevos">Más recientes</option>
+            </select>
+          </div>
+        )}
         {cargando ? (
           <div className="empty-state">
             <span className="empty-state__icon">⏳</span>

@@ -65,7 +65,9 @@ function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin,
                     <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{usuario.email}</p>
                   </div>
                   <MenuItem onClick={() => { onPerfil(); setMenuAbierto(false); }}>Mi perfil</MenuItem>
-                  <MenuItem onClick={() => { onProponer(); setMenuAbierto(false); }}>+ Proponer sitio</MenuItem>
+                  <div className="solo-movil">
+                    <MenuItem onClick={() => { onProponer(); setMenuAbierto(false); }}>+ Proponer sitio</MenuItem>
+                  </div>
                   {esAdmin && <MenuItem onClick={() => { onAdmin(); setMenuAbierto(false); }}>Panel de admin</MenuItem>}
                   <MenuItem onClick={() => { onLogout(); setMenuAbierto(false); }} danger>Cerrar sesión</MenuItem>
                 </div>

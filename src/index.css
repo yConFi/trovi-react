@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+.solo-movil {
+  display: none;
+}
+
 /* ===========================
    RESET & BASE
 =========================== */
@@ -698,6 +702,10 @@ a {
 
   .nav a {
     display: none;
+  }
+
+  .solo-movil {
+    display: block;
   }
 
   .footer__inner {

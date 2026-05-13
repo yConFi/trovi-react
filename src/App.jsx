@@ -160,7 +160,7 @@ function App() {
       <section className="hero">
         <div className="container hero__inner">
           <h1 className="hero__title">Descubre dónde comer,<br />sin saber qué buscar.</h1>
-          <p className="hero__subtitle">Descubre sitios que aún no conocías.</p>
+          <p className="hero__subtitle">Pon tus filtros. Trovi hace el resto.</p>
           <div className="search-bar">
             <div className="search-bar__field">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>

@@ -23,6 +23,18 @@ function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin,
           <a href="#">Cómo funciona</a>
           <button className="btn btn--outline" onClick={onProponer}>+ Proponer sitio</button>
 
+          {!usuario && (
+            <button
+              className="solo-movil"
+              onClick={onLoginClick}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+            </button>
+          )}
           {usuario ? (
             <div style={{ position: 'relative' }} ref={ref}>
               <button

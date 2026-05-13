@@ -240,7 +240,12 @@ function App() {
                 {restauranteActivo.tipo.map(t => <span key={t} className="card__tag">{t}</span>)}
               </div>
               <h2 className="modal__nombre">{restauranteActivo.nombre}</h2>
-              <p className="modal__rating">★ {restauranteActivo.valoracion} · {restauranteActivo.numValoraciones} valoraciones · {restauranteActivo.barrio ? `${restauranteActivo.barrio}, ` : ''}{restauranteActivo.ciudad}</p>
+              <p className="modal__rating">
+                {restauranteActivo.numValoraciones > 0
+                  ? `★ ${restauranteActivo.valoracion} · ${restauranteActivo.numValoraciones} valoraciones · `
+                  : '✨ Nuevo · '}
+                {restauranteActivo.barrio ? `${restauranteActivo.barrio}, ` : ''}{restauranteActivo.ciudad}
+              </p>
               <p className="modal__gancho">"{restauranteActivo.porQueIr}"</p>
               <p className="modal__descripcion">{restauranteActivo.descripcion}</p>
               <div className="modal__info">

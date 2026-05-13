@@ -24,12 +24,30 @@ function OrdenDropdown({ value, onChange }) {
   return (
     <div className="dropdown" ref={ref} style={{ width: 'auto' }}>
       <button
-        className={`dropdown__trigger has-value`}
         type="button"
         onClick={() => setAbierto(a => !a)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          border: '1.5px solid #e5e7eb',
+          borderRadius: 999,
+          background: 'white',
+          padding: '7px 14px',
+          fontFamily: 'Inter, sans-serif',
+          fontSize: '0.85rem',
+          fontWeight: 500,
+          color: '#4b5563',
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
+          transition: 'border-color 0.15s',
+        }}
+        onMouseEnter={e => e.currentTarget.style.borderColor = '#ff5c3a'}
+        onMouseLeave={e => e.currentTarget.style.borderColor = '#e5e7eb'}
       >
-        <span className="dropdown__label">{etiqueta}</span>
-        <span className={`dropdown__arrow${abierto ? " dropdown__arrow--open" : ""}`}>▾</span>
+        <span style={{ color: '#9ca3af', fontWeight: 400 }}>Ordenar:</span>
+        <span style={{ color: '#111827', fontWeight: 600 }}>{etiqueta}</span>
+        <span style={{ fontSize: '0.7rem', color: '#9ca3af', transition: 'transform 0.15s', display: 'inline-block', transform: abierto ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
       </button>
       {abierto && (
         <ul className="dropdown__menu" style={{ display: 'block', left: 'auto', right: 0 }}>

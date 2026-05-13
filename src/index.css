@@ -696,6 +696,10 @@ a {
     display: none;
   }
 
+  .nav a {
+    display: none;
+  }
+
   .footer__inner {
     flex-direction: column;
     gap: 8px;

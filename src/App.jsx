@@ -4,6 +4,7 @@ import RestaurantCard from './RestaurantCard';
 import PrecioDropdown from './PrecioDropdown';
 import AuthModal from './AuthModal';
 import PropuestaModal from './PropuestaModal';
+import AdminPanel from './AdminPanel';
 import { supabase } from './supabase';
 
 const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Italiana", "Mediterránea", "Tapas", "Brunch"];
@@ -14,6 +15,9 @@ function App() {
   const [usuario, setUsuario] = useState(null);
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [modalPropuestaAbierto, setModalPropuestaAbierto] = useState(false);
+  const [adminAbierto, setAdminAbierto] = useState(false);
+
+  const esAdmin = usuario?.email === 'rickybejarano@hotmail.com';
   const [ciudad, setCiudad] = useState("");
   const [tipo, setTipo] = useState("");
   const [precio, setPrecio] = useState("");
@@ -76,9 +80,11 @@ function App() {
     <div>
       <Header
         usuario={usuario}
+        esAdmin={esAdmin}
         onLoginClick={() => setModalAuthAbierto(true)}
         onLogout={() => supabase.auth.signOut()}
         onProponer={() => usuario ? setModalPropuestaAbierto(true) : setModalAuthAbierto(true)}
+        onAdmin={() => setAdminAbierto(true)}
       />
 
       <section className="hero">
@@ -162,6 +168,10 @@ function App() {
           </div>
         )}
       </main>
+
+      {adminAbierto && (
+        <AdminPanel onClose={() => setAdminAbierto(false)} />
+      )}
 
       {modalPropuestaAbierto && (
         <PropuestaModal

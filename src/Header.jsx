@@ -1,4 +1,4 @@
-function Header({ usuario, onLoginClick, onLogout, onProponer }) {
+function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin }) {
   return (
     <header className="header">
       <div className="container header__inner">
@@ -7,6 +7,9 @@ function Header({ usuario, onLoginClick, onLogout, onProponer }) {
           <a href="#">Explorar</a>
           <a href="#">Cómo funciona</a>
           <button className="btn btn--outline" onClick={onProponer}>+ Proponer sitio</button>
+          {esAdmin && (
+            <button className="btn btn--outline" onClick={onAdmin} style={{ borderColor: '#ff5c3a', color: '#ff5c3a' }}>Admin</button>
+          )}
           {usuario ? (
             <>
               <span style={{ fontSize: '0.85rem', color: '#6b7280' }}>{usuario.email}</span>

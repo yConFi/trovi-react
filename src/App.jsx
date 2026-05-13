@@ -36,6 +36,7 @@ function App() {
           porQueIr: r.por_que_ir,
           precioMedio: r.precio_medio,
           precio: r.precio,
+          fotoUrl: r.foto_url,
         }));
         setRestaurantes(mapeados);
       }
@@ -146,7 +147,11 @@ function App() {
         <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setRestauranteActivo(null)}>
           <div className="modal">
             <button className="modal__close" onClick={() => setRestauranteActivo(null)}>✕</button>
-            <div className="modal__image">{restauranteActivo.emoji}</div>
+            <div className="modal__image">
+              {restauranteActivo.fotoUrl
+                ? <img src={restauranteActivo.fotoUrl} alt={restauranteActivo.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '20px 20px 0 0' }} />
+                : restauranteActivo.emoji}
+            </div>
             <div className="modal__body">
               <div className="modal__tags">
                 {restauranteActivo.tipo.map(t => <span key={t} className="card__tag">{t}</span>)}

@@ -1,5 +1,5 @@
 function RestaurantCard({ restaurante, onClick }) {
-  const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio } = restaurante;
+  const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio, fotoUrl } = restaurante;
 
   const simbolosPrecio = Array.from({ length: 4 }, (_, i) =>
     i < precio
@@ -9,7 +9,11 @@ function RestaurantCard({ restaurante, onClick }) {
 
   return (
     <article className="card" onClick={onClick}>
-      <div className="card__image">{emoji}</div>
+      <div className="card__image">
+        {fotoUrl
+          ? <img src={fotoUrl} alt={nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : emoji}
+      </div>
       <div className="card__body">
         <div className="card__header">
           <h3 className="card__name">{nombre}</h3>

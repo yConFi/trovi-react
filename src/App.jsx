@@ -3,6 +3,7 @@ import Header from './Header';
 import RestaurantCard from './RestaurantCard';
 import PrecioDropdown from './PrecioDropdown';
 import AuthModal from './AuthModal';
+import PropuestaModal from './PropuestaModal';
 import { supabase } from './supabase';
 
 const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Italiana", "Mediterránea", "Tapas", "Brunch"];
@@ -12,6 +13,7 @@ function App() {
   const [cargando, setCargando] = useState(true);
   const [usuario, setUsuario] = useState(null);
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
+  const [modalPropuestaAbierto, setModalPropuestaAbierto] = useState(false);
   const [ciudad, setCiudad] = useState("");
   const [tipo, setTipo] = useState("");
   const [precio, setPrecio] = useState("");
@@ -76,6 +78,7 @@ function App() {
         usuario={usuario}
         onLoginClick={() => setModalAuthAbierto(true)}
         onLogout={() => supabase.auth.signOut()}
+        onProponer={() => usuario ? setModalPropuestaAbierto(true) : setModalAuthAbierto(true)}
       />
 
       <section className="hero">
@@ -159,6 +162,13 @@ function App() {
           </div>
         )}
       </main>
+
+      {modalPropuestaAbierto && (
+        <PropuestaModal
+          usuario={usuario}
+          onClose={() => setModalPropuestaAbierto(false)}
+        />
+      )}
 
       {modalAuthAbierto && (
         <AuthModal

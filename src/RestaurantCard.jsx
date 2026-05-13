@@ -1,11 +1,6 @@
 function RestaurantCard({ restaurante, onClick, esFavorito, onToggleFavorito }) {
-  const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio, fotoUrl } = restaurante;
+  const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio, precioMedio, fotoUrl } = restaurante;
 
-  const simbolosPrecio = Array.from({ length: 4 }, (_, i) =>
-    i < precio
-      ? <span key={i} style={{ color: '#111827' }}>€</span>
-      : <span key={i} style={{ color: '#d1d5db' }}>€</span>
-  );
 
   return (
     <article className="card" onClick={onClick}>
@@ -40,7 +35,9 @@ function RestaurantCard({ restaurante, onClick, esFavorito, onToggleFavorito }) 
         </div>
         <div className="card__footer">
           <span className="card__location">📍 {barrio ? `${barrio}, ` : ''}{ciudad}</span>
-          <span className="card__price">{simbolosPrecio}</span>
+          <span className="card__price">
+            {precioMedio > 0 ? `${precioMedio}€ p.p.` : '—'}
+          </span>
         </div>
       </div>
     </article>

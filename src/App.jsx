@@ -90,7 +90,7 @@ function App() {
   const filtrados = restaurantes.filter(r => {
     const coincideCiudad = ciudad === "" || r.ciudad.toLowerCase().includes(ciudad.toLowerCase()) || r.barrio.toLowerCase().includes(ciudad.toLowerCase());
     const coincideTipo = tipo === "" || r.tipo.some(t => t.toLowerCase().includes(tipo.toLowerCase()));
-    const coincidePrecio = precio === "" || r.precio <= parseInt(precio);
+    const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
     const coincideChip = chipActivo === "Todo" || r.tipo.includes(chipActivo);
     return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;
   });

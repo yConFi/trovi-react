@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 
 const opciones = [
   { value: "", label: "Precio máx." },
-  { value: "1", label: "€ — Económico" },
-  { value: "2", label: "€€ — Precio medio" },
-  { value: "3", label: "€€€ — Especial" },
+  { value: "15", label: "Hasta 15€ p.p." },
+  { value: "30", label: "Hasta 30€ p.p." },
+  { value: "50", label: "Hasta 50€ p.p." },
 ];
 
 function PrecioDropdown({ value, onChange }) {

@@ -22,7 +22,7 @@ function OrdenDropdown({ value, onChange }) {
   }, []);
 
   return (
-    <div className="dropdown" ref={ref}>
+    <div className="dropdown" ref={ref} style={{ width: 'auto' }}>
       <button
         className={`dropdown__trigger has-value`}
         type="button"

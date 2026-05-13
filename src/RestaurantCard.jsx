@@ -3,7 +3,7 @@ function RestaurantCard({ restaurante, onClick }) {
 
   const simbolosPrecio = Array.from({ length: 4 }, (_, i) =>
     i < precio
-      ? <span key={i}>€</span>
+      ? <span key={i} style={{ color: '#111827' }}>€</span>
       : <span key={i} style={{ color: '#d1d5db' }}>€</span>
   );
 

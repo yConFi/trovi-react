@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './supabase';
+import RestaurantCard from './RestaurantCard';
 
 const estadoConfig = {
   pendiente: { label: 'Pendiente', color: '#f59e0b', bg: '#fef3c7' },
@@ -7,18 +8,30 @@ const estadoConfig = {
   rechazado: { label: 'Rechazado', color: '#ef4444', bg: '#fee2e2' },
 };
 
-function PerfilPanel({ usuario, onClose }) {
+function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito }) {
   const [propuestas, setPropuestas] = useState([]);
+  const [restaurantesFav, setRestaurantesFav] = useState([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     async function cargar() {
-      const { data } = await supabase
-        .from('propuestas')
-        .select('*')
-        .eq('user_id', usuario.id)
-        .order('created_at', { ascending: false });
-      setPropuestas(data ?? []);
+      const [{ data: props }, { data: favs }] = await Promise.all([
+        supabase.from('propuestas').select('*').eq('user_id', usuario.id).order('created_at', { ascending: false }),
+        supabase.from('favoritos').select('restaurantes(*)').eq('user_id', usuario.id),
+      ]);
+      setPropuestas(props ?? []);
+      setRestaurantesFav(favs ? favs.map(f => ({
+        id: f.restaurantes.id,
+        nombre: f.restaurantes.nombre,
+        emoji: f.restaurantes.emoji,
+        tipo: f.restaurantes.tipo,
+        valoracion: f.restaurantes.valoracion,
+        numValoraciones: f.restaurantes.num_valoraciones,
+        ciudad: f.restaurantes.ciudad,
+        barrio: f.restaurantes.barrio,
+        precio: f.restaurantes.precio,
+        fotoUrl: f.restaurantes.foto_url,
+      })) : []);
       setCargando(false);
     }
     cargar();
@@ -34,6 +47,23 @@ function PerfilPanel({ usuario, onClose }) {
           </div>
           <button className="btn btn--outline" onClick={onClose}>← Volver</button>
         </div>
+
+        {restaurantesFav.length > 0 && (
+          <>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: 16 }}>Mis favoritos</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, marginBottom: 40 }}>
+              {restaurantesFav.map(r => (
+                <RestaurantCard
+                  key={r.id}
+                  restaurante={r}
+                  esFavorito={favoritos.includes(r.id)}
+                  onToggleFavorito={() => onToggleFavorito(r.id)}
+                  onClick={() => {}}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: 16 }}>Mis propuestas</h2>
 

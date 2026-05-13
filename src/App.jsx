@@ -18,6 +18,7 @@ function App() {
   const [modalPropuestaAbierto, setModalPropuestaAbierto] = useState(false);
   const [adminAbierto, setAdminAbierto] = useState(false);
   const [perfilAbierto, setPerfilAbierto] = useState(false);
+  const [favoritos, setFavoritos] = useState([]);
 
   const esAdmin = usuario?.email === 'rickybejarano@hotmail.com';
   const [ciudad, setCiudad] = useState("");
@@ -32,10 +33,29 @@ function App() {
       setUsuario(data.session?.user ?? null);
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUsuario(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUsuario(u);
+      if (u) cargarFavoritos(u.id);
+      else setFavoritos([]);
     });
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  async function cargarFavoritos(userId) {
+    const { data } = await supabase.from('favoritos').select('restaurante_id').eq('user_id', userId);
+    setFavoritos(data ? data.map(f => f.restaurante_id) : []);
+  }
+
+  async function toggleFavorito(restauranteId) {
+    if (!usuario) { setModalAuthAbierto(true); return; }
+    if (favoritos.includes(restauranteId)) {
+      await supabase.from('favoritos').delete().eq('user_id', usuario.id).eq('restaurante_id', restauranteId);
+      setFavoritos(prev => prev.filter(id => id !== restauranteId));
+    } else {
+      await supabase.from('favoritos').insert({ user_id: usuario.id, restaurante_id: restauranteId });
+      setFavoritos(prev => [...prev, restauranteId]);
+    }
+  }
 
   useEffect(() => {
     async function cargarRestaurantes() {
@@ -44,6 +64,7 @@ function App() {
         console.error('Error cargando restaurantes:', error);
       } else {
         const mapeados = data.map(r => ({
+          id: r.id,
           nombre: r.nombre,
           emoji: r.emoji,
           tipo: Array.isArray(r.tipo) ? r.tipo : (r.tipo ?? '').split(',').map(t => t.trim()).filter(Boolean),
@@ -166,7 +187,13 @@ function App() {
         ) : (
           <div className="cards-grid">
             {filtrados.map((r, i) => (
-              <RestaurantCard key={i} restaurante={r} onClick={() => setRestauranteActivo(r)} />
+              <RestaurantCard
+                key={i}
+                restaurante={r}
+                esFavorito={favoritos.includes(r.id)}
+                onToggleFavorito={() => toggleFavorito(r.id)}
+                onClick={() => setRestauranteActivo(r)}
+              />
             ))}
           </div>
         )}
@@ -177,7 +204,12 @@ function App() {
       )}
 
       {perfilAbierto && (
-        <PerfilPanel usuario={usuario} onClose={() => setPerfilAbierto(false)} />
+        <PerfilPanel
+          usuario={usuario}
+          onClose={() => setPerfilAbierto(false)}
+          favoritos={favoritos}
+          onToggleFavorito={toggleFavorito}
+        />
       )}
 
       {modalPropuestaAbierto && (

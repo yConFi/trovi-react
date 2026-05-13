@@ -6,6 +6,7 @@ import AuthModal from './AuthModal';
 import PropuestaModal from './PropuestaModal';
 import AdminPanel from './AdminPanel';
 import ValoracionEstrellas from './ValoracionEstrellas';
+import OrdenDropdown from './OrdenDropdown';
 import PerfilPanel from './PerfilPanel';
 import { supabase } from './supabase';
 
@@ -209,24 +210,7 @@ function App() {
       <main className="container results">
         {hasBuscado && filtrados.length > 0 && (
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-            <select
-              value={orden}
-              onChange={e => setOrden(e.target.value)}
-              style={{
-                border: '1.5px solid #e5e7eb',
-                borderRadius: 10,
-                padding: '8px 14px',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '0.85rem',
-                color: '#4b5563',
-                background: 'white',
-                cursor: 'pointer',
-                outline: 'none',
-              }}
-            >
-              <option value="valoracion">Mejor valorados</option>
-              <option value="nuevos">Más recientes</option>
-            </select>
+            <OrdenDropdown value={orden} onChange={setOrden} />
           </div>
         )}
         {cargando ? (

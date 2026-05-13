@@ -25,7 +25,7 @@ function RestaurantCard({ restaurante, onClick }) {
           {tipo.map(t => <span key={t} className="card__tag">{t}</span>)}
         </div>
         <div className="card__footer">
-          <span className="card__location">📍 {barrio}, {ciudad}</span>
+          <span className="card__location">📍 {barrio ? `${barrio}, ` : ''}{ciudad}</span>
           <span className="card__price">{simbolosPrecio}</span>
         </div>
       </div>

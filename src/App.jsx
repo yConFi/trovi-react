@@ -5,6 +5,7 @@ import PrecioDropdown from './PrecioDropdown';
 import AuthModal from './AuthModal';
 import PropuestaModal from './PropuestaModal';
 import AdminPanel from './AdminPanel';
+import ValoracionEstrellas from './ValoracionEstrellas';
 import PerfilPanel from './PerfilPanel';
 import { supabase } from './supabase';
 
@@ -19,6 +20,7 @@ function App() {
   const [adminAbierto, setAdminAbierto] = useState(false);
   const [perfilAbierto, setPerfilAbierto] = useState(false);
   const [favoritos, setFavoritos] = useState([]);
+  const [miValoracion, setMiValoracion] = useState(null);
 
   const esAdmin = usuario?.email === 'rickybejarano@hotmail.com';
   const [ciudad, setCiudad] = useState("");
@@ -44,6 +46,43 @@ function App() {
   async function cargarFavoritos(userId) {
     const { data } = await supabase.from('favoritos').select('restaurante_id').eq('user_id', userId);
     setFavoritos(data ? data.map(f => f.restaurante_id) : []);
+  }
+
+  async function abrirModal(restaurante) {
+    setRestauranteActivo(restaurante);
+    setMiValoracion(null);
+    if (usuario) {
+      const { data } = await supabase
+        .from('valoraciones')
+        .select('puntuacion')
+        .eq('user_id', usuario.id)
+        .eq('restaurante_id', restaurante.id)
+        .single();
+      if (data) setMiValoracion(data.puntuacion);
+    }
+  }
+
+  async function valorar(puntuacion) {
+    if (!usuario) { setModalAuthAbierto(true); return; }
+    await supabase.from('valoraciones').upsert({
+      user_id: usuario.id,
+      restaurante_id: restauranteActivo.id,
+      puntuacion,
+    }, { onConflict: 'user_id,restaurante_id' });
+    setMiValoracion(puntuacion);
+
+    const { data } = await supabase
+      .from('valoraciones')
+      .select('puntuacion')
+      .eq('restaurante_id', restauranteActivo.id);
+
+    if (data) {
+      const media = (data.reduce((acc, v) => acc + parseFloat(v.puntuacion), 0) / data.length).toFixed(1);
+      const count = data.length;
+      await supabase.from('restaurantes').update({ valoracion: media, num_valoraciones: count }).eq('id', restauranteActivo.id);
+      setRestaurantes(prev => prev.map(r => r.id === restauranteActivo.id ? { ...r, valoracion: media, numValoraciones: count } : r));
+      setRestauranteActivo(prev => ({ ...prev, valoracion: media, numValoraciones: count }));
+    }
   }
 
   async function toggleFavorito(restauranteId) {
@@ -192,7 +231,7 @@ function App() {
                 restaurante={r}
                 esFavorito={favoritos.includes(r.id)}
                 onToggleFavorito={() => toggleFavorito(r.id)}
-                onClick={() => setRestauranteActivo(r)}
+                onClick={() => abrirModal(r)}
               />
             ))}
           </div>
@@ -253,6 +292,11 @@ function App() {
                 <div className="modal__info-item"><span>🕐</span><span>{restauranteActivo.horario}</span></div>
                 <div className="modal__info-item"><span>💶</span><span>Precio medio por persona: {restauranteActivo.precioMedio}€</span></div>
               </div>
+
+              <ValoracionEstrellas
+                miValoracion={miValoracion}
+                onValorar={valorar}
+              />
             </div>
           </div>
         </div>

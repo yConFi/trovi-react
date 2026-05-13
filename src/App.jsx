@@ -5,6 +5,7 @@ import PrecioDropdown from './PrecioDropdown';
 import AuthModal from './AuthModal';
 import PropuestaModal from './PropuestaModal';
 import AdminPanel from './AdminPanel';
+import PerfilPanel from './PerfilPanel';
 import { supabase } from './supabase';
 
 const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Italiana", "Mediterránea", "Tapas", "Brunch"];
@@ -16,6 +17,7 @@ function App() {
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [modalPropuestaAbierto, setModalPropuestaAbierto] = useState(false);
   const [adminAbierto, setAdminAbierto] = useState(false);
+  const [perfilAbierto, setPerfilAbierto] = useState(false);
 
   const esAdmin = usuario?.email === 'rickybejarano@hotmail.com';
   const [ciudad, setCiudad] = useState("");
@@ -85,6 +87,7 @@ function App() {
         onLogout={() => supabase.auth.signOut()}
         onProponer={() => usuario ? setModalPropuestaAbierto(true) : setModalAuthAbierto(true)}
         onAdmin={() => setAdminAbierto(true)}
+        onPerfil={() => setPerfilAbierto(true)}
       />
 
       <section className="hero">
@@ -171,6 +174,10 @@ function App() {
 
       {adminAbierto && (
         <AdminPanel onClose={() => setAdminAbierto(false)} />
+      )}
+
+      {perfilAbierto && (
+        <PerfilPanel usuario={usuario} onClose={() => setPerfilAbierto(false)} />
       )}
 
       {modalPropuestaAbierto && (

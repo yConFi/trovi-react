@@ -1,4 +1,4 @@
-function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin }) {
+function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin, onPerfil }) {
   return (
     <header className="header">
       <div className="container header__inner">
@@ -12,7 +12,7 @@ function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin 
           )}
           {usuario ? (
             <>
-              <span style={{ fontSize: '0.85rem', color: '#6b7280' }}>{usuario.email}</span>
+              <button onClick={onPerfil} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem', color: '#6b7280', padding: 0 }}>{usuario.email}</button>
               <button className="btn btn--outline" onClick={onLogout}>Cerrar sesión</button>
             </>
           ) : (

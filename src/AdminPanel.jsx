@@ -19,7 +19,7 @@ const labelStyle = {
   display: 'block',
 };
 
-function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
+function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBoton = '✓ Publicar restaurante' }) {
   const [form, setForm] = useState({
     nombre: propuesta.nombre ?? '',
     ciudad: propuesta.ciudad ?? '',
@@ -28,7 +28,7 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
     direccion: propuesta.direccion ?? '',
     horario: '',
     descripcion: propuesta.descripcion ?? '',
-    porQueIr: propuesta.descripcion ?? '',
+    porQueIr: '',
     precioMedio: '',
     emoji: '🍽️',
     fotoUrl: '',
@@ -125,18 +125,11 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
           <label style={labelStyle}>Foto</label>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <input style={{ ...inputStyle, flex: 1 }} value={form.fotoUrl} onChange={e => set('fotoUrl', e.target.value)} placeholder="https://... o sube una imagen" />
-            <label style={{
-              padding: '10px 16px', border: '1.5px solid #e5e7eb', borderRadius: 10,
-              cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#4b5563',
-              background: 'white', whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif',
-              opacity: subiendoFoto ? 0.6 : 1,
-            }}>
+            <label style={{ padding: '10px 16px', border: '1.5px solid #e5e7eb', borderRadius: 10, cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#4b5563', background: 'white', whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif', opacity: subiendoFoto ? 0.6 : 1 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 {!subiendoFoto && (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                   </svg>
                 )}
                 {subiendoFoto ? 'Subiendo…' : 'Subir'}
@@ -145,10 +138,8 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
             </label>
           </div>
           {estadoFoto === 'ok' && <p style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 600, marginTop: 6 }}>✓ Foto subida correctamente</p>}
-          {estadoFoto === 'error' && <p style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600, marginTop: 6 }}>✕ Error al subir la foto. Inténtalo de nuevo.</p>}
-          {form.fotoUrl && (
-            <img src={form.fotoUrl} alt="preview" style={{ marginTop: 10, width: '100%', height: 140, objectFit: 'cover', borderRadius: 10 }} />
-          )}
+          {estadoFoto === 'error' && <p style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600, marginTop: 6 }}>✕ Error al subir la foto.</p>}
+          {form.fotoUrl && <img src={form.fotoUrl} alt="preview" style={{ marginTop: 10, width: '100%', height: 140, objectFit: 'cover', borderRadius: 10 }} />}
         </div>
       </div>
       <div>
@@ -160,19 +151,10 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
         <textarea style={{ ...inputStyle, resize: 'vertical' }} rows={2} value={form.porQueIr} onChange={e => set('porQueIr', e.target.value)} placeholder="El gancho que aparece destacado en la tarjeta" />
       </div>
       <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-        <button
-          className="btn btn--primary"
-          style={{ padding: '10px 24px', fontSize: '0.9rem' }}
-          onClick={handlePublicar}
-          disabled={publicando}
-        >
-          {publicando ? 'Publicando…' : '✓ Publicar restaurante'}
+        <button className="btn btn--primary" style={{ padding: '10px 24px', fontSize: '0.9rem' }} onClick={handlePublicar} disabled={publicando || subiendoFoto}>
+          {publicando ? 'Publicando…' : textoBoton}
         </button>
-        <button
-          className="btn btn--outline"
-          style={{ padding: '10px 20px', fontSize: '0.9rem' }}
-          onClick={onCancelar}
-        >
+        <button className="btn btn--outline" style={{ padding: '10px 20px', fontSize: '0.9rem' }} onClick={onCancelar}>
           Cancelar
         </button>
       </div>
@@ -184,36 +166,28 @@ function AdminPanel({ onClose, onPublicado }) {
   const [propuestas, setPropuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [propuestaEditando, setPropuestaEditando] = useState(null);
+  const [añadiendoNuevo, setAñadiendoNuevo] = useState(false);
 
   useEffect(() => {
     cargarPropuestas();
   }, []);
 
   async function cargarPropuestas() {
-    const { data } = await supabase
-      .from('propuestas')
-      .select('*')
-      .eq('estado', 'pendiente')
-      .order('created_at', { ascending: false });
+    const { data } = await supabase.from('propuestas').select('*').eq('estado', 'pendiente').order('created_at', { ascending: false });
     setPropuestas(data ?? []);
     setCargando(false);
   }
 
   async function notificar(email, nombre, estado) {
     try {
-      await supabase.functions.invoke('notificar-propuesta', {
-        body: { email, nombre, estado },
-      });
+      await supabase.functions.invoke('notificar-propuesta', { body: { email, nombre, estado } });
     } catch (e) {
       console.error('Error enviando notificación:', e);
     }
   }
 
-  async function publicar(propuesta, form) {
-    const tipoArray = form.tipo
-      ? form.tipo.split(',').map(t => t.trim()).filter(Boolean)
-      : ['Restaurante'];
-
+  async function insertarRestaurante(form) {
+    const tipoArray = form.tipo ? form.tipo.split(',').map(t => t.trim()).filter(Boolean) : ['Restaurante'];
     await supabase.from('restaurantes').insert({
       nombre: form.nombre,
       emoji: form.emoji,
@@ -230,18 +204,26 @@ function AdminPanel({ onClose, onPublicado }) {
       precio: 2,
       foto_url: form.fotoUrl || null,
     });
+    if (onPublicado) onPublicado();
+  }
 
+  async function aprobar(propuesta, form) {
+    await insertarRestaurante(form);
     await supabase.from('propuestas').update({ estado: 'aprobado' }).eq('id', propuesta.id);
     if (propuesta.user_email) await notificar(propuesta.user_email, form.nombre, 'aprobado');
     setPropuestas(prev => prev.filter(p => p.id !== propuesta.id));
     setPropuestaEditando(null);
-    if (onPublicado) onPublicado();
   }
 
   async function rechazar(propuesta) {
     await supabase.from('propuestas').update({ estado: 'rechazado' }).eq('id', propuesta.id);
     if (propuesta.user_email) await notificar(propuesta.user_email, propuesta.nombre, 'rechazado');
     setPropuestas(prev => prev.filter(p => p.id !== propuesta.id));
+  }
+
+  async function añadirDirecto(form) {
+    await insertarRestaurante(form);
+    setAñadiendoNuevo(false);
   }
 
   const rowStyle = {
@@ -259,17 +241,38 @@ function AdminPanel({ onClose, onPublicado }) {
       <div className="panel-fullscreen__inner">
         <div className="panel-fullscreen__header">
           <div>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#111827' }}>Panel de admin</h1>
-            <p style={{ color: '#6b7280', fontSize: '0.9rem', marginTop: 4 }}>Propuestas pendientes de revisión</p>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#111827' }}>
+              {añadiendoNuevo ? 'Añadir restaurante' : 'Panel de admin'}
+            </h1>
+            <p style={{ color: '#6b7280', fontSize: '0.9rem', marginTop: 4 }}>
+              {añadiendoNuevo ? 'Rellena los datos y publica directamente' : 'Propuestas pendientes de revisión'}
+            </p>
           </div>
-          <button className="btn btn--outline" onClick={onClose}>← Volver</button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {!añadiendoNuevo && (
+              <button className="btn btn--primary" style={{ padding: '8px 18px', fontSize: '0.85rem' }} onClick={() => setAñadiendoNuevo(true)}>
+                + Añadir
+              </button>
+            )}
+            <button className="btn btn--outline" onClick={añadiendoNuevo ? () => setAñadiendoNuevo(false) : onClose}>
+              {añadiendoNuevo ? '← Volver' : '← Volver'}
+            </button>
+          </div>
         </div>
 
-        {cargando ? (
+        {añadiendoNuevo ? (
+          <FormularioRestaurante
+            onPublicar={añadirDirecto}
+            onCancelar={() => setAñadiendoNuevo(false)}
+            textoBoton="✓ Añadir restaurante"
+          />
+        ) : cargando ? (
           <p style={{ color: '#6b7280' }}>Cargando…</p>
         ) : propuestas.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0', color: '#6b7280' }}>
-            <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }}>✅</span>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', margin: '0 auto 12px' }}>
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
             <p>No hay propuestas pendientes.</p>
           </div>
         ) : (
@@ -281,36 +284,41 @@ function AdminPanel({ onClose, onPublicado }) {
                   <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{new Date(p.created_at).toLocaleDateString('es-ES')}</span>
                 </div>
                 <div style={{ fontSize: '0.85rem', color: '#6b7280', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                  {p.ciudad && <span>📍 {p.barrio ? `${p.barrio}, ` : ''}{p.ciudad}</span>}
-                  {p.tipo && <span>🍽️ {p.tipo}</span>}
-                  {p.direccion && <span>🏠 {p.direccion}</span>}
+                  {p.ciudad && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                      {p.barrio ? `${p.barrio}, ` : ''}{p.ciudad}
+                    </span>
+                  )}
+                  {p.tipo && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+                      {p.tipo}
+                    </span>
+                  )}
                 </div>
-                {p.descripcion && (
-                  <p style={{ fontSize: '0.9rem', color: '#4b5563', lineHeight: 1.5 }}>{p.descripcion}</p>
+                {p.descripcion && <p style={{ fontSize: '0.9rem', color: '#4b5563', lineHeight: 1.5 }}>{p.descripcion}</p>}
+                {p.fotos_urls?.length > 0 && (
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+                    {p.fotos_urls.map(url => (
+                      <img key={url} src={url} alt="" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 6 }} />
+                    ))}
+                  </div>
                 )}
-
                 {propuestaEditando === p.id ? (
                   <div style={{ marginTop: 12, paddingTop: 16, borderTop: '1px solid #f3f4f6' }}>
-                    <FormularioAprobacion
+                    <FormularioRestaurante
                       propuesta={p}
-                      onPublicar={(form) => publicar(p, form)}
+                      onPublicar={(form) => aprobar(p, form)}
                       onCancelar={() => setPropuestaEditando(null)}
                     />
                   </div>
                 ) : (
                   <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-                    <button
-                      className="btn btn--primary"
-                      style={{ padding: '8px 20px', fontSize: '0.85rem' }}
-                      onClick={() => setPropuestaEditando(p.id)}
-                    >
+                    <button className="btn btn--primary" style={{ padding: '8px 20px', fontSize: '0.85rem' }} onClick={() => setPropuestaEditando(p.id)}>
                       ✓ Aprobar
                     </button>
-                    <button
-                      className="btn btn--outline"
-                      style={{ padding: '8px 20px', fontSize: '0.85rem', color: '#ef4444', borderColor: '#fca5a5' }}
-                      onClick={() => rechazar(p)}
-                    >
+                    <button className="btn btn--outline" style={{ padding: '8px 20px', fontSize: '0.85rem', color: '#ef4444', borderColor: '#fca5a5' }} onClick={() => rechazar(p)}>
                       ✕ Rechazar
                     </button>
                   </div>
@@ -325,4 +333,3 @@ function AdminPanel({ onClose, onPublicado }) {
 }
 
 export default AdminPanel;
-

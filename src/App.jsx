@@ -407,11 +407,20 @@ function App() {
               <p className="modal__gancho">"{restauranteActivo.porQueIr}"</p>
               <p className="modal__descripcion">{restauranteActivo.descripcion}</p>
               <div className="modal__info">
-                <div className="modal__info-item"><span>📍</span><span>{restauranteActivo.direccion}</span></div>
-                <div className="modal__info-item"><span>🕐</span><span>{restauranteActivo.horario}</span></div>
-                <div className="modal__info-item"><span>💶</span><span>Precio medio por persona: {restauranteActivo.precioMedio}€</span></div>
                 <div className="modal__info-item">
-                  <span>🗺️</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                  <span>{restauranteActivo.direccion}</span>
+                </div>
+                <div className="modal__info-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>{restauranteActivo.horario}</span>
+                </div>
+                <div className="modal__info-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M17 6.5A7 7 0 1 0 17 17.5"/><path d="M4 10h10"/><path d="M4 14h10"/></svg>
+                  <span>{restauranteActivo.precioMedio}€ p.p.</span>
+                </div>
+                <div className="modal__info-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restauranteActivo.nombre} ${restauranteActivo.direccion || restauranteActivo.ciudad}`)}`}
                     target="_blank"

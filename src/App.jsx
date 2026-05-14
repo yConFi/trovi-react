@@ -30,7 +30,7 @@ function App() {
   const [chipActivo, setChipActivo] = useState("Todo");
   const [hasBuscado, setHasBuscado] = useState(false);
   const [restauranteActivo, setRestauranteActivo] = useState(null);
-  const [orden, setOrden] = useState("valoracion");
+  const [orden, setOrden] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {

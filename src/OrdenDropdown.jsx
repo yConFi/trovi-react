@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 const opciones = [
+  { value: "", label: "Por defecto" },
   { value: "valoracion", label: "Mejor valorados" },
   { value: "nuevos", label: "Más recientes" },
 ];
@@ -45,8 +46,8 @@ function OrdenDropdown({ value, onChange }) {
         onMouseEnter={e => e.currentTarget.style.borderColor = '#ff5c3a'}
         onMouseLeave={e => e.currentTarget.style.borderColor = '#e5e7eb'}
       >
-        <span style={{ color: '#9ca3af', fontWeight: 400 }}>Ordenar:</span>
-        <span style={{ color: '#111827', fontWeight: 600 }}>{etiqueta}</span>
+        {value && <span style={{ color: '#9ca3af', fontWeight: 400 }}>Ordenar:</span>}
+        <span style={{ color: value ? '#111827' : '#9ca3af', fontWeight: value ? 600 : 400 }}>{value ? etiqueta : 'Ordenar'}</span>
         <span style={{ fontSize: '0.7rem', color: '#9ca3af', transition: 'transform 0.15s', display: 'inline-block', transform: abierto ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
       </button>
       {abierto && (

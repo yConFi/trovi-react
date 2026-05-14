@@ -551,7 +551,47 @@ a {
 .empty-state p {
   font-size: 0.95rem;
   max-width: 360px;
-  margin: 0 auto;
+  margin: 0 auto 20px;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.card-skeleton {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.card-skeleton__image {
+  height: 200px;
+  background: #f3f4f6;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+.card-skeleton__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-skeleton__line {
+  height: 13px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+.card-skeleton__line--short {
+  width: 55%;
+}
+
+.card-skeleton__line--xshort {
+  width: 35%;
 }
 
 /* ===========================

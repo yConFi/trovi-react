@@ -396,21 +396,36 @@ function App() {
           </div>
         )}
         {cargando ? (
-          <div className="empty-state">
-            <svg className="empty-state__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ff5c3a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-            </svg>
-            <h3>Cargando restaurantes…</h3>
+          <div className="cards-grid">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="card-skeleton">
+                <div className="card-skeleton__image" />
+                <div className="card-skeleton__body">
+                  <div className="card-skeleton__line card-skeleton__line--short" />
+                  <div className="card-skeleton__line card-skeleton__line--xshort" />
+                  <div className="card-skeleton__line" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : filtrados.length === 0 ? (
           <div className="empty-state">
             <svg className="empty-state__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-              <path d="M7 2v20"/>
-              <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
-            <h3>Sin resultados</h3>
-            <p>No hemos encontrado sitios con esos filtros. Prueba a cambiar la ciudad o el tipo de comida.</p>
+            {hayFiltros ? (
+              <>
+                <h3>Sin resultados</h3>
+                <p>No hay sitios con esos filtros. Prueba con otra ciudad o tipo de cocina.</p>
+                <button className="btn btn--outline" onClick={limpiar}>Limpiar filtros</button>
+              </>
+            ) : (
+              <>
+                <h3>Aún no hay sitios por aquí</h3>
+                <p>Sé el primero en proponer un restaurante para esta zona.</p>
+                <button className="btn btn--primary" onClick={() => usuario ? setModalPropuestaAbierto(true) : setModalAuthAbierto(true)}>+ Proponer sitio</button>
+              </>
+            )}
           </div>
         ) : (
           <div className="cards-grid">

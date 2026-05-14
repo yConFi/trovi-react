@@ -30,7 +30,6 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
     descripcion: propuesta.descripcion ?? '',
     porQueIr: propuesta.descripcion ?? '',
     precioMedio: '',
-    precio: '2',
     emoji: '🍽️',
     fotoUrl: '',
   });
@@ -55,7 +54,7 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
         </div>
         <div>
           <label style={labelStyle}>Emoji</label>
-          <input style={inputStyle} value={form.emoji} onChange={e => set('emoji', e.target.value)} />
+          <input style={inputStyle} value={form.emoji} onChange={e => set('emoji', e.target.value)} placeholder="🍽️" />
         </div>
         <div>
           <label style={labelStyle}>Ciudad</label>
@@ -80,14 +79,6 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
         <div>
           <label style={labelStyle}>Precio medio (€ p.p.)</label>
           <input style={inputStyle} type="number" value={form.precioMedio} onChange={e => set('precioMedio', e.target.value)} placeholder="Ej: 25" />
-        </div>
-        <div>
-          <label style={labelStyle}>Rango de precio</label>
-          <select style={inputStyle} value={form.precio} onChange={e => set('precio', e.target.value)}>
-            <option value="1">€ (económico)</option>
-            <option value="2">€€ (moderado)</option>
-            <option value="3">€€€ (caro)</option>
-          </select>
         </div>
         <div>
           <label style={labelStyle}>URL de foto</label>
@@ -170,7 +161,7 @@ function AdminPanel({ onClose }) {
       descripcion: form.descripcion,
       por_que_ir: form.porQueIr,
       precio_medio: parseFloat(form.precioMedio) || 0,
-      precio: parseInt(form.precio),
+      precio: 2,
       foto_url: form.fotoUrl || null,
     });
 

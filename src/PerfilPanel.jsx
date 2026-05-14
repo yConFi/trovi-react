@@ -38,9 +38,9 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
   }, [usuario.id]);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#fafaf9', zIndex: 400, overflowY: 'auto' }}>
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '40px 24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+    <div className="panel-fullscreen">
+      <div className="panel-fullscreen__inner">
+        <div className="panel-fullscreen__header">
           <div>
             <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#111827' }}>Mi perfil</h1>
             <p style={{ color: '#6b7280', fontSize: '0.9rem', marginTop: 4 }}>{usuario.email}</p>
@@ -71,7 +71,9 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
           <p style={{ color: '#6b7280' }}>Cargando…</p>
         ) : propuestas.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0', color: '#6b7280' }}>
-            <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }}>📭</span>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', margin: '0 auto 12px' }}>
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
             <p>Todavía no has propuesto ningún sitio.</p>
           </div>
         ) : (
@@ -102,5 +104,6 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
     </div>
   );
 }
+
 
 export default PerfilPanel;

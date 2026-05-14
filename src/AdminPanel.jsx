@@ -234,9 +234,9 @@ function AdminPanel({ onClose, onPublicado }) {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#fafaf9', zIndex: 400, overflowY: 'auto' }}>
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+    <div className="panel-fullscreen">
+      <div className="panel-fullscreen__inner">
+        <div className="panel-fullscreen__header">
           <div>
             <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#111827' }}>Panel de admin</h1>
             <p style={{ color: '#6b7280', fontSize: '0.9rem', marginTop: 4 }}>Propuestas pendientes de revisión</p>
@@ -304,3 +304,4 @@ function AdminPanel({ onClose, onPublicado }) {
 }
 
 export default AdminPanel;
+

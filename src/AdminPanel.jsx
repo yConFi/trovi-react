@@ -35,6 +35,7 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
   });
   const [publicando, setPublicando] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
+  const [estadoFoto, setEstadoFoto] = useState(null);
 
   function set(field, value) {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -44,12 +45,16 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
     const file = e.target.files[0];
     if (!file) return;
     setSubiendoFoto(true);
+    setEstadoFoto(null);
     const ext = file.name.split('.').pop();
     const path = `${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from('restaurantes').upload(path, file);
     if (!error) {
       const { data } = supabase.storage.from('restaurantes').getPublicUrl(path);
       set('fotoUrl', data.publicUrl);
+      setEstadoFoto('ok');
+    } else {
+      setEstadoFoto('error');
     }
     setSubiendoFoto(false);
   }
@@ -118,6 +123,8 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
               <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleSubirFoto} disabled={subiendoFoto} />
             </label>
           </div>
+          {estadoFoto === 'ok' && <p style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 600, marginTop: 6 }}>✓ Foto subida correctamente</p>}
+          {estadoFoto === 'error' && <p style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600, marginTop: 6 }}>✕ Error al subir la foto. Inténtalo de nuevo.</p>}
           {form.fotoUrl && (
             <img src={form.fotoUrl} alt="preview" style={{ marginTop: 10, width: '100%', height: 140, objectFit: 'cover', borderRadius: 10 }} />
           )}

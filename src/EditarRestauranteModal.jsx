@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from './supabase';
+import { useSwipeClose } from './useSwipeClose';
 
 const inputStyle = {
   padding: '10px 14px',
@@ -20,6 +21,7 @@ const labelStyle = {
 };
 
 function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }) {
+  const { ref, onTouchStart, onTouchMove, onTouchEnd } = useSwipeClose(onCerrar);
   const [form, setForm] = useState({
     nombre: restaurante.nombre ?? '',
     emoji: restaurante.emoji ?? '🍽️',
@@ -104,7 +106,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
 
   return (
     <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && onCerrar()}>
-      <div className="modal" style={{ maxWidth: 580 }}>
+      <div className="modal" style={{ maxWidth: 580 }} ref={ref} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         <button className="modal__close" onClick={onCerrar}>✕</button>
         <div className="modal__body" style={{ paddingTop: 40 }}>
           <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: 20 }}>Editar restaurante</h2>

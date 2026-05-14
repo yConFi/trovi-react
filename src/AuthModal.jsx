@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { supabase } from './supabase';
+import { useSwipeClose } from './useSwipeClose';
 
 function AuthModal({ onClose, onAuth }) {
+  const { ref, onTouchStart, onTouchMove, onTouchEnd } = useSwipeClose(onClose);
   const [modo, setModo] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,7 +38,7 @@ function AuthModal({ onClose, onAuth }) {
 
   return (
     <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal" style={{ maxWidth: 400 }}>
+      <div className="modal" style={{ maxWidth: 400 }} ref={ref} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         <button className="modal__close" onClick={onClose}>✕</button>
         <div className="modal__body" style={{ paddingTop: 40 }}>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 6 }}>

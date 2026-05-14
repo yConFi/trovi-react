@@ -10,6 +10,7 @@ import OrdenDropdown from './OrdenDropdown';
 import EditarRestauranteModal from './EditarRestauranteModal';
 import PerfilPanel from './PerfilPanel';
 import { supabase } from './supabase';
+import { useSwipeClose } from './useSwipeClose';
 
 const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Italiana", "Mediterránea", "Tapas", "Brunch"];
 
@@ -41,6 +42,7 @@ function App() {
   const [linkCopiado, setLinkCopiado] = useState(false);
   const [destacadosExpandido, setDestacadosExpandido] = useState(true);
 
+  const comoFuncionaSwipe = useSwipeClose(() => setComoFuncionaAbierto(false));
   const modalRef = useRef(null);
   const touchStartY = useRef(0);
   const dragOffset = useRef(0);
@@ -596,7 +598,7 @@ function App() {
       )}
       {comoFuncionaAbierto && (
         <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setComoFuncionaAbierto(false)}>
-          <div className="modal" style={{ maxWidth: 480 }}>
+          <div className="modal" style={{ maxWidth: 480 }} ref={comoFuncionaSwipe.ref} onTouchStart={comoFuncionaSwipe.onTouchStart} onTouchMove={comoFuncionaSwipe.onTouchMove} onTouchEnd={comoFuncionaSwipe.onTouchEnd}>
             <button className="modal__close" onClick={() => setComoFuncionaAbierto(false)}>✕</button>
             <div className="modal__body" style={{ paddingTop: 36 }}>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#111827', marginBottom: 8 }}>¿Cómo funciona Trovi?</h2>

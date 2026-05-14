@@ -14,6 +14,8 @@ import { supabase } from './supabase';
 const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Italiana", "Mediterránea", "Tapas", "Brunch"];
 
 function App() {
+  const ridInicial = useRef(new URLSearchParams(window.location.search).get('r'));
+
   const [restaurantes, setRestaurantes] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [usuario, setUsuario] = useState(null);
@@ -194,13 +196,10 @@ function App() {
         }));
         setRestaurantes(mapeados);
 
-        const rid = new URLSearchParams(window.location.search).get('r');
-        if (rid) {
-          const r = mapeados.find(r => r.id === rid);
-          if (r) {
-            setRestauranteActivo(r);
-            window.history.replaceState(null, '', `?r=${r.id}`);
-          }
+        if (ridInicial.current) {
+          const r = mapeados.find(r => r.id === ridInicial.current);
+          if (r) setRestauranteActivo(r);
+          ridInicial.current = null;
         }
       }
       setCargando(false);

@@ -333,17 +333,19 @@ function App() {
             </button>
           </div>
           {destacadosExpandido && (
-            <div className="destacados__scroll">
-              {restaurantes.filter(r => r.destacado).map(r => (
-                <div key={r.id} className="destacados__card">
-                  <RestaurantCard
-                    restaurante={r}
-                    esFavorito={favoritos.includes(r.id)}
-                    onToggleFavorito={() => toggleFavorito(r.id)}
-                    onClick={() => abrirModal(r)}
-                  />
-                </div>
-              ))}
+            <div className="destacados__scroll-wrap">
+              <div className="destacados__scroll">
+                {restaurantes.filter(r => r.destacado).map(r => (
+                  <div key={r.id} className="destacados__card">
+                    <RestaurantCard
+                      restaurante={r}
+                      esFavorito={favoritos.includes(r.id)}
+                      onToggleFavorito={() => toggleFavorito(r.id)}
+                      onClick={() => abrirModal(r)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </section>

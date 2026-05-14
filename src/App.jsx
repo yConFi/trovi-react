@@ -139,12 +139,13 @@ function App() {
   }
 
   async function valorar(puntuacion) {
-    if (!usuario) { setModalAuthAbierto(true); return; }
-    await supabase.from('valoraciones').upsert({
+    if (!usuario) { setModalAuthAbierto(true); return false; }
+    const { error } = await supabase.from('valoraciones').upsert({
       user_id: usuario.id,
       restaurante_id: restauranteActivo.id,
       puntuacion,
     }, { onConflict: 'user_id,restaurante_id' });
+    if (error) return false;
     setMiValoracion(puntuacion);
 
     const { data } = await supabase
@@ -159,6 +160,7 @@ function App() {
       setRestaurantes(prev => prev.map(r => r.id === restauranteActivo.id ? { ...r, valoracion: media, numValoraciones: count } : r));
       setRestauranteActivo(prev => ({ ...prev, valoracion: media, numValoraciones: count }));
     }
+    return true;
   }
 
   async function toggleFavorito(restauranteId) {
@@ -577,6 +579,8 @@ function App() {
               <ValoracionEstrellas
                 miValoracion={miValoracion}
                 onValorar={valorar}
+                usuario={usuario}
+                onLoginClick={() => setModalAuthAbierto(true)}
               />
             </div>
           </div>

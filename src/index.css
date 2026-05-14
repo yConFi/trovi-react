@@ -318,6 +318,27 @@ a {
   color: white;
 }
 
+.filters--barrios {
+  background: #fafaf9;
+}
+
+.filters--barrios .filters__inner {
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-chip--barrio {
+  font-size: 0.8rem;
+  padding: 5px 12px;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.filter-chip--barrio:hover {
+  border-color: #ff5c3a;
+  color: #ff5c3a;
+}
+
 /* ===========================
    DESTACADOS
 =========================== */

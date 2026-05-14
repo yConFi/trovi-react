@@ -33,6 +33,7 @@ function App() {
   const [tipoDebounced, setTipoDebounced] = useState("");
   const [precio, setPrecio] = useState("");
   const [chipActivo, setChipActivo] = useState("Todo");
+  const [barrioActivo, setBarrioActivo] = useState("");
   const [restauranteActivo, setRestauranteActivo] = useState(null);
   const [editandoRestaurante, setEditandoRestaurante] = useState(false);
   const [orden, setOrden] = useState("");
@@ -209,13 +210,22 @@ function App() {
     cargarRestaurantes();
   }, []);
 
-  const filtrados = restaurantes.filter(r => {
+  const filtradosSinBarrio = restaurantes.filter(r => {
     const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase());
     const coincideTipo = tipoDebounced === "" || r.tipo.some(t => t.toLowerCase().includes(tipoDebounced.toLowerCase()));
     const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
     const coincideChip = chipActivo === "Todo" || r.tipo.includes(chipActivo);
     return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;
-  }).sort((a, b) => {
+  });
+
+  const barriosDisponibles = [...new Set(
+    filtradosSinBarrio.map(r => r.barrio).filter(Boolean)
+  )].sort();
+
+  const filtrados = (barrioActivo
+    ? filtradosSinBarrio.filter(r => r.barrio === barrioActivo)
+    : filtradosSinBarrio
+  ).sort((a, b) => {
     if (orden === "valoracion") return (parseFloat(b.valoracion) || 0) - (parseFloat(a.valoracion) || 0);
     if (orden === "nuevos") return new Date(b.creadoEn) - new Date(a.creadoEn);
     return 0;
@@ -229,9 +239,10 @@ function App() {
     setPrecio("");
     setChipActivo("Todo");
     setOrden("");
+    setBarrioActivo("");
   }
 
-  const hayFiltros = ciudad !== "" || tipo !== "" || precio !== "" || chipActivo !== "Todo";
+  const hayFiltros = ciudad !== "" || tipo !== "" || precio !== "" || chipActivo !== "Todo" || barrioActivo !== "";
 
   return (
     <div>
@@ -314,6 +325,25 @@ function App() {
           )}
         </div>
       </section>
+
+      {barriosDisponibles.length >= 2 && (
+        <section className="filters filters--barrios">
+          <div className="container filters__inner">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
+            </svg>
+            {barriosDisponibles.map(barrio => (
+              <button
+                key={barrio}
+                className={`filter-chip filter-chip--barrio${barrioActivo === barrio ? ' filter-chip--active' : ''}`}
+                onClick={() => setBarrioActivo(barrioActivo === barrio ? '' : barrio)}
+              >
+                {barrio}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {filtrados.length > 0 && (
         <section className="destacados">

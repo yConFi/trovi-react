@@ -1,9 +1,132 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 
+const inputStyle = {
+  padding: '10px 14px',
+  border: '1.5px solid #e5e7eb',
+  borderRadius: 10,
+  fontFamily: 'Inter, sans-serif',
+  fontSize: '0.9rem',
+  outline: 'none',
+  width: '100%',
+};
+
+const labelStyle = {
+  fontSize: '0.8rem',
+  fontWeight: 600,
+  color: '#6b7280',
+  marginBottom: 4,
+  display: 'block',
+};
+
+function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
+  const [form, setForm] = useState({
+    nombre: propuesta.nombre ?? '',
+    ciudad: propuesta.ciudad ?? '',
+    barrio: propuesta.barrio ?? '',
+    tipo: propuesta.tipo ?? '',
+    direccion: propuesta.direccion ?? '',
+    horario: '',
+    descripcion: propuesta.descripcion ?? '',
+    porQueIr: propuesta.descripcion ?? '',
+    precioMedio: '',
+    precio: '2',
+    emoji: '🍽️',
+    fotoUrl: '',
+  });
+  const [publicando, setPublicando] = useState(false);
+
+  function set(field, value) {
+    setForm(prev => ({ ...prev, [field]: value }));
+  }
+
+  async function handlePublicar() {
+    setPublicando(true);
+    await onPublicar(form);
+    setPublicando(false);
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div>
+          <label style={labelStyle}>Nombre</label>
+          <input style={inputStyle} value={form.nombre} onChange={e => set('nombre', e.target.value)} />
+        </div>
+        <div>
+          <label style={labelStyle}>Emoji</label>
+          <input style={inputStyle} value={form.emoji} onChange={e => set('emoji', e.target.value)} />
+        </div>
+        <div>
+          <label style={labelStyle}>Ciudad</label>
+          <input style={inputStyle} value={form.ciudad} onChange={e => set('ciudad', e.target.value)} />
+        </div>
+        <div>
+          <label style={labelStyle}>Barrio</label>
+          <input style={inputStyle} value={form.barrio} onChange={e => set('barrio', e.target.value)} />
+        </div>
+        <div>
+          <label style={labelStyle}>Tipo (separado por comas)</label>
+          <input style={inputStyle} value={form.tipo} onChange={e => set('tipo', e.target.value)} placeholder="Ej: Japonesa, Restaurantes" />
+        </div>
+        <div>
+          <label style={labelStyle}>Dirección</label>
+          <input style={inputStyle} value={form.direccion} onChange={e => set('direccion', e.target.value)} />
+        </div>
+        <div>
+          <label style={labelStyle}>Horario</label>
+          <input style={inputStyle} value={form.horario} onChange={e => set('horario', e.target.value)} placeholder="Ej: Mar-Dom 13:00-23:00" />
+        </div>
+        <div>
+          <label style={labelStyle}>Precio medio (€ p.p.)</label>
+          <input style={inputStyle} type="number" value={form.precioMedio} onChange={e => set('precioMedio', e.target.value)} placeholder="Ej: 25" />
+        </div>
+        <div>
+          <label style={labelStyle}>Rango de precio</label>
+          <select style={inputStyle} value={form.precio} onChange={e => set('precio', e.target.value)}>
+            <option value="1">€ (económico)</option>
+            <option value="2">€€ (moderado)</option>
+            <option value="3">€€€ (caro)</option>
+          </select>
+        </div>
+        <div>
+          <label style={labelStyle}>URL de foto</label>
+          <input style={inputStyle} value={form.fotoUrl} onChange={e => set('fotoUrl', e.target.value)} placeholder="https://..." />
+        </div>
+      </div>
+      <div>
+        <label style={labelStyle}>Descripción</label>
+        <textarea style={{ ...inputStyle, resize: 'vertical' }} rows={3} value={form.descripcion} onChange={e => set('descripcion', e.target.value)} />
+      </div>
+      <div>
+        <label style={labelStyle}>¿Por qué ir?</label>
+        <textarea style={{ ...inputStyle, resize: 'vertical' }} rows={2} value={form.porQueIr} onChange={e => set('porQueIr', e.target.value)} placeholder="El gancho que aparece destacado en la tarjeta" />
+      </div>
+      <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+        <button
+          className="btn btn--primary"
+          style={{ padding: '10px 24px', fontSize: '0.9rem' }}
+          onClick={handlePublicar}
+          disabled={publicando}
+        >
+          {publicando ? 'Publicando…' : '✓ Publicar restaurante'}
+        </button>
+        <button
+          className="btn btn--outline"
+          style={{ padding: '10px 20px', fontSize: '0.9rem' }}
+          onClick={onCancelar}
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function AdminPanel({ onClose }) {
   const [propuestas, setPropuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [propuestaEditando, setPropuestaEditando] = useState(null);
 
   useEffect(() => {
     cargarPropuestas();
@@ -29,30 +152,32 @@ function AdminPanel({ onClose }) {
     }
   }
 
-  async function aprobar(propuesta) {
-    const tipoArray = propuesta.tipo
-      ? propuesta.tipo.split(',').map(t => t.trim()).filter(Boolean)
+  async function publicar(propuesta, form) {
+    const tipoArray = form.tipo
+      ? form.tipo.split(',').map(t => t.trim()).filter(Boolean)
       : ['Restaurante'];
 
     await supabase.from('restaurantes').insert({
-      nombre: propuesta.nombre,
-      emoji: '🍽️',
+      nombre: form.nombre,
+      emoji: form.emoji,
       tipo: tipoArray,
       valoracion: 0,
       num_valoraciones: 0,
-      ciudad: propuesta.ciudad,
-      barrio: propuesta.barrio ?? '',
-      direccion: propuesta.direccion ?? '',
-      horario: 'Consultar',
-      descripcion: propuesta.descripcion ?? '',
-      por_que_ir: propuesta.descripcion ?? '',
-      precio_medio: 0,
-      precio: 2,
+      ciudad: form.ciudad,
+      barrio: form.barrio,
+      direccion: form.direccion,
+      horario: form.horario || 'Consultar',
+      descripcion: form.descripcion,
+      por_que_ir: form.porQueIr,
+      precio_medio: parseFloat(form.precioMedio) || 0,
+      precio: parseInt(form.precio),
+      foto_url: form.fotoUrl || null,
     });
 
     await supabase.from('propuestas').update({ estado: 'aprobado' }).eq('id', propuesta.id);
-    if (propuesta.user_email) await notificar(propuesta.user_email, propuesta.nombre, 'aprobado');
+    if (propuesta.user_email) await notificar(propuesta.user_email, form.nombre, 'aprobado');
     setPropuestas(prev => prev.filter(p => p.id !== propuesta.id));
+    setPropuestaEditando(null);
   }
 
   async function rechazar(propuesta) {
@@ -105,22 +230,33 @@ function AdminPanel({ onClose }) {
                 {p.descripcion && (
                   <p style={{ fontSize: '0.9rem', color: '#4b5563', lineHeight: 1.5 }}>{p.descripcion}</p>
                 )}
-                <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-                  <button
-                    className="btn btn--primary"
-                    style={{ padding: '8px 20px', fontSize: '0.85rem' }}
-                    onClick={() => aprobar(p)}
-                  >
-                    ✓ Aprobar
-                  </button>
-                  <button
-                    className="btn btn--outline"
-                    style={{ padding: '8px 20px', fontSize: '0.85rem', color: '#ef4444', borderColor: '#fca5a5' }}
-                    onClick={() => rechazar(p)}
-                  >
-                    ✕ Rechazar
-                  </button>
-                </div>
+
+                {propuestaEditando === p.id ? (
+                  <div style={{ marginTop: 12, paddingTop: 16, borderTop: '1px solid #f3f4f6' }}>
+                    <FormularioAprobacion
+                      propuesta={p}
+                      onPublicar={(form) => publicar(p, form)}
+                      onCancelar={() => setPropuestaEditando(null)}
+                    />
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+                    <button
+                      className="btn btn--primary"
+                      style={{ padding: '8px 20px', fontSize: '0.85rem' }}
+                      onClick={() => setPropuestaEditando(p.id)}
+                    >
+                      ✓ Aprobar
+                    </button>
+                    <button
+                      className="btn btn--outline"
+                      style={{ padding: '8px 20px', fontSize: '0.85rem', color: '#ef4444', borderColor: '#fca5a5' }}
+                      onClick={() => rechazar(p)}
+                    >
+                      ✕ Rechazar
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

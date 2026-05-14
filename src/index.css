@@ -339,6 +339,10 @@ a {
   border-color: #e5e7eb;
 }
 
+.filter-chip--barrio.filter-chip--active {
+  color: white;
+}
+
 .filter-chip--barrio:not(.filter-chip--active):hover {
   border-color: #ff5c3a;
   color: #ff5c3a;

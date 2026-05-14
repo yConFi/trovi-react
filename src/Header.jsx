@@ -87,6 +87,7 @@ function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin,
             </div>
           ) : (
             <button
+              className="no-movil"
               onClick={onLoginClick}
               style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', fontWeight: 600, color: '#4b5563', padding: '8px 4px' }}
             >

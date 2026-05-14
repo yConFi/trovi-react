@@ -193,6 +193,7 @@ function App() {
           precio: r.precio,
           fotoUrl: r.foto_url,
           creadoEn: r.created_at,
+          destacado: r.destacado ?? false,
         }));
         setRestaurantes(mapeados);
 
@@ -312,6 +313,26 @@ function App() {
           )}
         </div>
       </section>
+
+      {restaurantes.some(r => r.destacado) && (
+        <section className="destacados">
+          <div className="container">
+            <h2 className="destacados__titulo">Destacados</h2>
+          </div>
+          <div className="destacados__scroll">
+            {restaurantes.filter(r => r.destacado).map(r => (
+              <div key={r.id} className="destacados__card">
+                <RestaurantCard
+                  restaurante={r}
+                  esFavorito={favoritos.includes(r.id)}
+                  onToggleFavorito={() => toggleFavorito(r.id)}
+                  onClick={() => abrirModal(r)}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <main id="resultados" className="container results">
         {filtrados.length > 0 && (

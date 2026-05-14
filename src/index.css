@@ -319,6 +319,41 @@ a {
 }
 
 /* ===========================
+   DESTACADOS
+=========================== */
+.destacados {
+  padding: 32px 0 8px;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+}
+
+.destacados__titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+  padding: 0 24px;
+}
+
+.destacados__scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 24px 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.destacados__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.destacados__card {
+  min-width: 280px;
+  flex-shrink: 0;
+}
+
+/* ===========================
    RESULTADOS
 =========================== */
 .results {

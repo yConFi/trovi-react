@@ -32,6 +32,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
     porQueIr: restaurante.porQueIr ?? '',
     precioMedio: restaurante.precioMedio ?? '',
     fotoUrl: restaurante.fotoUrl ?? '',
+    destacado: restaurante.destacado ?? false,
   });
   const [guardando, setGuardando] = useState(false);
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
@@ -78,6 +79,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
       por_que_ir: form.porQueIr,
       precio_medio: parseFloat(form.precioMedio) || 0,
       foto_url: form.fotoUrl || null,
+      destacado: form.destacado,
     }).eq('id', restaurante.id);
 
     if (!error) {
@@ -94,6 +96,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
         porQueIr: form.porQueIr,
         precioMedio: parseFloat(form.precioMedio) || 0,
         fotoUrl: form.fotoUrl || null,
+        destacado: form.destacado,
       });
     }
     setGuardando(false);
@@ -175,6 +178,24 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
               <label style={labelStyle}>¿Por qué ir?</label>
               <textarea style={{ ...inputStyle, resize: 'vertical' }} rows={2} value={form.porQueIr} onChange={e => set('porQueIr', e.target.value)} />
             </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none' }}>
+              <div
+                onClick={() => set('destacado', !form.destacado)}
+                style={{
+                  width: 40, height: 22, borderRadius: 999, cursor: 'pointer',
+                  background: form.destacado ? '#ff5c3a' : '#e5e7eb',
+                  position: 'relative', transition: 'background 0.2s ease', flexShrink: 0,
+                }}
+              >
+                <div style={{
+                  position: 'absolute', top: 3, left: form.destacado ? 21 : 3,
+                  width: 16, height: 16, borderRadius: '50%', background: 'white',
+                  transition: 'left 0.2s ease', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                }} />
+              </div>
+              <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#374151' }}>Marcar como destacado</span>
+            </label>
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, gap: 10 }}>
               <div style={{ display: 'flex', gap: 10 }}>
                 <button className="btn btn--primary" style={{ padding: '10px 24px' }} onClick={handleGuardar} disabled={guardando}>

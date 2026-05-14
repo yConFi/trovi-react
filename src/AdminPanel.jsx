@@ -21,6 +21,7 @@ const labelStyle = {
 
 function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBoton = '✓ Publicar restaurante' }) {
   const [form, setForm] = useState({
+    destacado: false,
     nombre: propuesta.nombre ?? '',
     ciudad: propuesta.ciudad ?? '',
     barrio: propuesta.barrio ?? '',
@@ -150,7 +151,17 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
         <label style={labelStyle}>¿Por qué ir?</label>
         <textarea style={{ ...inputStyle, resize: 'vertical' }} rows={2} value={form.porQueIr} onChange={e => set('porQueIr', e.target.value)} placeholder="El gancho que aparece destacado en la tarjeta" />
       </div>
-      <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none', marginTop: 4 }}>
+        <div
+          onClick={() => set('destacado', !form.destacado)}
+          style={{ width: 40, height: 22, borderRadius: 999, cursor: 'pointer', background: form.destacado ? '#ff5c3a' : '#e5e7eb', position: 'relative', transition: 'background 0.2s ease', flexShrink: 0 }}
+        >
+          <div style={{ position: 'absolute', top: 3, left: form.destacado ? 21 : 3, width: 16, height: 16, borderRadius: '50%', background: 'white', transition: 'left 0.2s ease', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+        </div>
+        <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#374151' }}>Marcar como destacado</span>
+      </label>
+
+      <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
         <button className="btn btn--primary" style={{ padding: '10px 24px', fontSize: '0.9rem' }} onClick={handlePublicar} disabled={publicando || subiendoFoto}>
           {publicando ? 'Publicando…' : textoBoton}
         </button>
@@ -203,6 +214,7 @@ function AdminPanel({ onClose, onPublicado }) {
       precio_medio: parseFloat(form.precioMedio) || 0,
       precio: 2,
       foto_url: form.fotoUrl || null,
+      destacado: form.destacado ?? false,
     });
     if (onPublicado) onPublicado();
   }

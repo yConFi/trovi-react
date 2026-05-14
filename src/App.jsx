@@ -473,13 +473,6 @@ function App() {
         />
       )}
 
-      {modalAuthAbierto && (
-        <AuthModal
-          onClose={() => setModalAuthAbierto(false)}
-          onAuth={setUsuario}
-        />
-      )}
-
       {restauranteActivo && (
         <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && cerrarModal()}>
           <div
@@ -645,6 +638,13 @@ function App() {
             setRestauranteActivo(null);
             setEditandoRestaurante(false);
           }}
+        />
+      )}
+
+      {modalAuthAbierto && (
+        <AuthModal
+          onClose={() => setModalAuthAbierto(false)}
+          onAuth={setUsuario}
         />
       )}
     </div>

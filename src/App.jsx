@@ -27,11 +27,23 @@ function App() {
   const esAdmin = usuario?.email === 'rickybejarano@hotmail.com';
   const [ciudad, setCiudad] = useState("");
   const [tipo, setTipo] = useState("");
+  const [ciudadDebounced, setCiudadDebounced] = useState("");
+  const [tipoDebounced, setTipoDebounced] = useState("");
   const [precio, setPrecio] = useState("");
   const [chipActivo, setChipActivo] = useState("Todo");
   const [restauranteActivo, setRestauranteActivo] = useState(null);
   const [editandoRestaurante, setEditandoRestaurante] = useState(false);
   const [orden, setOrden] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => setCiudadDebounced(ciudad), 300);
+    return () => clearTimeout(t);
+  }, [ciudad]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setTipoDebounced(tipo), 300);
+    return () => clearTimeout(t);
+  }, [tipo]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -131,8 +143,8 @@ function App() {
   }, []);
 
   const filtrados = restaurantes.filter(r => {
-    const coincideCiudad = ciudad === "" || r.ciudad.toLowerCase().includes(ciudad.toLowerCase()) || r.barrio.toLowerCase().includes(ciudad.toLowerCase());
-    const coincideTipo = tipo === "" || r.tipo.some(t => t.toLowerCase().includes(tipo.toLowerCase()));
+    const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase());
+    const coincideTipo = tipoDebounced === "" || r.tipo.some(t => t.toLowerCase().includes(tipoDebounced.toLowerCase()));
     const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
     const coincideChip = chipActivo === "Todo" || r.tipo.includes(chipActivo);
     return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;
@@ -145,6 +157,8 @@ function App() {
   function limpiar() {
     setCiudad("");
     setTipo("");
+    setCiudadDebounced("");
+    setTipoDebounced("");
     setPrecio("");
     setChipActivo("Todo");
     setOrden("");

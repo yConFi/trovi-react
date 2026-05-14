@@ -15,7 +15,10 @@ import { useSwipeClose } from './useSwipeClose';
 const CHIPS = ["Todo", "Restaurantes", "Cafeterías", "Bares", "Japonesa", "Italiana", "Mediterránea", "Tapas", "Brunch"];
 
 function App() {
-  const ridInicial = useRef(new URLSearchParams(window.location.search).get('r'));
+  const ridInicial = useRef(
+    new URLSearchParams(window.location.search).get('r') ||
+    (window.location.pathname.startsWith('/r/') ? window.location.pathname.slice(3) : null)
+  );
 
   const [restaurantes, setRestaurantes] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -115,7 +118,7 @@ function App() {
     setRestauranteActivo(restaurante);
     setMiValoracion(null);
     setLinkCopiado(false);
-    window.history.replaceState(null, '', `?r=${restaurante.id}`);
+    window.history.replaceState(null, '', `/r/${restaurante.id}`);
     if (usuario) {
       const { data } = await supabase
         .from('valoraciones')
@@ -129,11 +132,11 @@ function App() {
 
   function cerrarModal() {
     setRestauranteActivo(null);
-    window.history.replaceState(null, '', window.location.pathname);
+    window.history.replaceState(null, '', '/');
   }
 
   function compartir() {
-    const url = `${window.location.origin}?r=${restauranteActivo.id}`;
+    const url = `${window.location.origin}/r/${restauranteActivo.id}`;
     navigator.clipboard.writeText(url).then(() => {
       setLinkCopiado(true);
       setTimeout(() => setLinkCopiado(false), 2500);

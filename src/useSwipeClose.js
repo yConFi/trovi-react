@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-export function useSwipeClose(onClose) {
+export function useSwipeClose(onClose, threshold = null) {
   const ref = useRef(null);
   const touchStartY = useRef(0);
   const dragOffset = useRef(0);
@@ -19,7 +19,10 @@ export function useSwipeClose(onClose) {
   }
 
   function onTouchEnd() {
-    if (dragOffset.current > window.innerHeight * 0.5) {
+    const limit = threshold ?? (ref.current
+      ? ref.current.offsetHeight * 0.35
+      : window.innerHeight * 0.5);
+    if (dragOffset.current > limit) {
       onClose();
     } else if (ref.current) {
       ref.current.style.transform = '';

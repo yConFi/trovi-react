@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function ValoracionEstrellas({ miValoracion, onValorar }) {
   const [hover, setHover] = useState(0);
   const [seleccion, setSeleccion] = useState(miValoracion ?? 0);
   const [guardado, setGuardado] = useState(!!miValoracion);
+
+  useEffect(() => {
+    setSeleccion(miValoracion ?? 0);
+    setGuardado(!!miValoracion);
+  }, [miValoracion]);
 
   async function guardar() {
     await onValorar(seleccion);

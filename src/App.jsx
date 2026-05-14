@@ -220,7 +220,10 @@ function App() {
 
       <main className="container results">
         {hasBuscado && filtrados.length > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <p style={{ fontSize: '0.9rem', color: '#6b7280' }}>
+              <span style={{ fontWeight: 600, color: '#111827' }}>{filtrados.length}</span> {filtrados.length === 1 ? 'sitio encontrado' : 'sitios encontrados'}
+            </p>
             <OrdenDropdown value={orden} onChange={setOrden} />
           </div>
         )}

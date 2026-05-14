@@ -315,7 +315,7 @@ function App() {
         </div>
       </section>
 
-      {restaurantes.length > 0 && (
+      {filtrados.length > 0 && (
         <section className="destacados">
           <div className="container">
             <button
@@ -340,7 +340,7 @@ function App() {
           {destacadosExpandido && (
             <div className="destacados__scroll-wrap">
               <div className="destacados__scroll">
-                {[...restaurantes]
+                {[...filtrados]
                   .sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn))
                   .slice(0, 8)
                   .map(r => (

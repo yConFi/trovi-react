@@ -100,6 +100,27 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
           <label style={labelStyle}>Precio medio (€ p.p.)</label>
           <input style={inputStyle} type="number" value={form.precioMedio} onChange={e => set('precioMedio', e.target.value)} placeholder="Ej: 25" />
         </div>
+        {propuesta.fotos_urls?.length > 0 && (
+          <div style={{ gridColumn: 'span 2' }}>
+            <label style={labelStyle}>Fotos del usuario — haz clic para usar como foto principal</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+              {propuesta.fotos_urls.map(url => (
+                <div
+                  key={url}
+                  onClick={() => set('fotoUrl', url)}
+                  style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', aspectRatio: '1', cursor: 'pointer', outline: form.fotoUrl === url ? '2.5px solid #ff5c3a' : '2.5px solid transparent' }}
+                >
+                  <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {form.fotoUrl === url && (
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,92,58,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div style={{ gridColumn: 'span 2' }}>
           <label style={labelStyle}>Foto</label>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>

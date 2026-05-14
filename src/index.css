@@ -519,6 +519,9 @@ a {
   display: flex;
   align-items: center;
   gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .card__price {

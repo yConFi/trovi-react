@@ -261,6 +261,17 @@ function App() {
         )}
       </main>
 
+      <footer className="footer">
+        <div className="container footer__inner">
+          <span className="logo">Trovi</span>
+          <span>© {new Date().getFullYear()} Trovi · Hecho con ♥ en España</span>
+          <div style={{ display: 'flex', gap: 20 }}>
+            <a href="#" style={{ color: '#9ca3af' }} onMouseEnter={e => e.target.style.color='white'} onMouseLeave={e => e.target.style.color='#9ca3af'}>Explorar</a>
+            <a href="#" style={{ color: '#9ca3af' }} onMouseEnter={e => e.target.style.color='white'} onMouseLeave={e => e.target.style.color='#9ca3af'} onClick={e => { e.preventDefault(); usuario ? setModalPropuestaAbierto(true) : setModalAuthAbierto(true); }}>Proponer sitio</a>
+          </div>
+        </div>
+      </footer>
+
       {adminAbierto && (
         <AdminPanel onClose={() => setAdminAbierto(false)} />
       )}

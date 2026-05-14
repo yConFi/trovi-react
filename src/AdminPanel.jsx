@@ -159,7 +159,7 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
   );
 }
 
-function AdminPanel({ onClose }) {
+function AdminPanel({ onClose, onPublicado }) {
   const [propuestas, setPropuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [propuestaEditando, setPropuestaEditando] = useState(null);
@@ -214,6 +214,7 @@ function AdminPanel({ onClose }) {
     if (propuesta.user_email) await notificar(propuesta.user_email, form.nombre, 'aprobado');
     setPropuestas(prev => prev.filter(p => p.id !== propuesta.id));
     setPropuestaEditando(null);
+    if (onPublicado) onPublicado();
   }
 
   async function rechazar(propuesta) {

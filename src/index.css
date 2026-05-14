@@ -321,8 +321,13 @@ a {
 /* ===========================
    DESTACADOS
 =========================== */
+@keyframes troviPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.65); opacity: 0.45; }
+}
+
 .destacados {
-  padding: 28px 0 0;
+  padding: 20px 0 0;
   border-bottom: 1px solid #e5e7eb;
   background: white;
 }
@@ -335,19 +340,29 @@ a {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0 24px;
-  margin-bottom: 18px;
+  padding: 0;
+  margin-bottom: 16px;
 }
 
 .destacados__titulo {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
   margin-bottom: 0;
   padding: 0;
+}
+
+.destacados__pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff5c3a;
+  flex-shrink: 0;
+  display: inline-block;
+  animation: troviPulse 2s ease-in-out infinite;
 }
 
 .destacados__scroll-wrap {

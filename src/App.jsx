@@ -7,6 +7,7 @@ import PropuestaModal from './PropuestaModal';
 import AdminPanel from './AdminPanel';
 import ValoracionEstrellas from './ValoracionEstrellas';
 import OrdenDropdown from './OrdenDropdown';
+import EditarRestauranteModal from './EditarRestauranteModal';
 import PerfilPanel from './PerfilPanel';
 import { supabase } from './supabase';
 
@@ -30,6 +31,7 @@ function App() {
   const [chipActivo, setChipActivo] = useState("Todo");
   const [hasBuscado, setHasBuscado] = useState(false);
   const [restauranteActivo, setRestauranteActivo] = useState(null);
+  const [editandoRestaurante, setEditandoRestaurante] = useState(false);
   const [orden, setOrden] = useState("");
 
   useEffect(() => {
@@ -353,6 +355,24 @@ function App() {
         <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setRestauranteActivo(null)}>
           <div className="modal">
             <button className="modal__close" onClick={() => setRestauranteActivo(null)}>✕</button>
+            {esAdmin && (
+              <button
+                onClick={() => setEditandoRestaurante(true)}
+                style={{
+                  position: 'absolute', top: 16, right: 96, zIndex: 1,
+                  background: 'rgba(0,0,0,0.06)', border: 'none', borderRadius: '50%',
+                  width: 32, height: 32, cursor: 'pointer', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.12)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+            )}
             <button
               onClick={() => toggleFavorito(restauranteActivo.id)}
               style={{
@@ -410,6 +430,17 @@ function App() {
             </div>
           </div>
         </div>
+      )}
+      {editandoRestaurante && restauranteActivo && (
+        <EditarRestauranteModal
+          restaurante={restauranteActivo}
+          onCerrar={() => setEditandoRestaurante(false)}
+          onGuardar={actualizado => {
+            setRestaurantes(prev => prev.map(r => r.id === actualizado.id ? actualizado : r));
+            setRestauranteActivo(actualizado);
+            setEditandoRestaurante(false);
+          }}
+        />
       )}
     </div>
   );

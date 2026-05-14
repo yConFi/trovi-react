@@ -38,6 +38,7 @@ function App() {
   const [orden, setOrden] = useState("");
   const [comoFuncionaAbierto, setComoFuncionaAbierto] = useState(false);
   const [linkCopiado, setLinkCopiado] = useState(false);
+  const [destacadosExpandido, setDestacadosExpandido] = useState(true);
 
   const modalRef = useRef(null);
   const touchStartY = useRef(0);
@@ -317,20 +318,34 @@ function App() {
       {restaurantes.some(r => r.destacado) && (
         <section className="destacados">
           <div className="container">
-            <h2 className="destacados__titulo">Destacados</h2>
+            <button
+              className="destacados__header"
+              onClick={() => setDestacadosExpandido(v => !v)}
+            >
+              <h2 className="destacados__titulo">Destacados</h2>
+              <svg
+                width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                style={{ transform: destacadosExpandido ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease', flexShrink: 0 }}
+              >
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </button>
           </div>
-          <div className="destacados__scroll">
-            {restaurantes.filter(r => r.destacado).map(r => (
-              <div key={r.id} className="destacados__card">
-                <RestaurantCard
-                  restaurante={r}
-                  esFavorito={favoritos.includes(r.id)}
-                  onToggleFavorito={() => toggleFavorito(r.id)}
-                  onClick={() => abrirModal(r)}
-                />
-              </div>
-            ))}
-          </div>
+          {destacadosExpandido && (
+            <div className="destacados__scroll">
+              {restaurantes.filter(r => r.destacado).map(r => (
+                <div key={r.id} className="destacados__card">
+                  <RestaurantCard
+                    restaurante={r}
+                    esFavorito={favoritos.includes(r.id)}
+                    onToggleFavorito={() => toggleFavorito(r.id)}
+                    onClick={() => abrirModal(r)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       )}
 

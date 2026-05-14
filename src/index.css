@@ -327,12 +327,24 @@ a {
   background: white;
 }
 
+.destacados__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 24px;
+  margin-bottom: 16px;
+}
+
 .destacados__titulo {
   font-size: 1.1rem;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 16px;
-  padding: 0 24px;
+  margin-bottom: 0;
+  padding: 0;
 }
 
 .destacados__scroll {

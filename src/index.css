@@ -358,7 +358,7 @@ a {
 }
 
 .destacados {
-  padding: 20px 0 0;
+  padding: 0;
   border-bottom: 1px solid #e5e7eb;
   background: white;
 }
@@ -371,8 +371,8 @@ a {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
-  margin-bottom: 16px;
+  padding: 14px 24px;
+  margin-bottom: 0;
 }
 
 .destacados__titulo {
@@ -381,7 +381,7 @@ a {
   gap: 8px;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #374151;
+  color: #111827;
   margin-bottom: 0;
   padding: 0;
 }
@@ -417,7 +417,7 @@ a {
   gap: 14px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 4px 24px 24px;
+  padding: 2px 24px 24px;
   -webkit-overflow-scrolling: touch;
 }
 

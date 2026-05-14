@@ -49,7 +49,7 @@ export default async function handler(req, res) {
     },
     body: JSON.stringify({
       from: 'Trovi <onboarding@resend.dev>',
-      to: 'rickybejarano@hotmail.com',
+      to: 'rickyhidalgobejarano99@gmail.com',
       subject: `Nueva propuesta: ${nombre} (${ciudad})`,
       html,
     }),

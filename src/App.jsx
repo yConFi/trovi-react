@@ -145,6 +145,17 @@ function App() {
     setHasBuscado(true);
   }
 
+  function limpiar() {
+    setCiudad("");
+    setTipo("");
+    setPrecio("");
+    setChipActivo("Todo");
+    setHasBuscado(false);
+    setOrden("");
+  }
+
+  const hayFiltros = ciudad !== "" || tipo !== "" || precio !== "" || chipActivo !== "Todo";
+
   return (
     <div>
       <Header
@@ -200,6 +211,16 @@ function App() {
               <PrecioDropdown value={precio} onChange={setPrecio} />
             </div>
             <button className="btn btn--primary search-bar__btn" onClick={buscar}>Buscar</button>
+            {hayFiltros && (
+              <button
+                onClick={limpiar}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: '#9ca3af', whiteSpace: 'nowrap', padding: '0 8px', flexShrink: 0 }}
+                onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                onMouseLeave={e => e.currentTarget.style.color = '#9ca3af'}
+              >
+                ✕ Limpiar
+              </button>
+            )}
           </div>
         </div>
       </section>

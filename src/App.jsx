@@ -315,7 +315,7 @@ function App() {
         </div>
       </section>
 
-      {restaurantes.some(r => r.destacado) && (
+      {restaurantes.length > 0 && (
         <section className="destacados">
           <div className="container">
             <button
@@ -323,10 +323,10 @@ function App() {
               onClick={() => setDestacadosExpandido(v => !v)}
             >
               <h2 className="destacados__titulo">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff5c3a" stroke="none">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ff5c3a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                Destacados
+                Recién añadidos
               </h2>
               <svg
                 width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -340,7 +340,10 @@ function App() {
           {destacadosExpandido && (
             <div className="destacados__scroll-wrap">
               <div className="destacados__scroll">
-                {restaurantes.filter(r => r.destacado).map(r => (
+                {[...restaurantes]
+                  .sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn))
+                  .slice(0, 8)
+                  .map(r => (
                   <div key={r.id} className="destacados__card">
                     <RestaurantCard
                       restaurante={r}

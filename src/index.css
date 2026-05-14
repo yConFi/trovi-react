@@ -342,7 +342,7 @@ a {
 .destacados__titulo {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   font-size: 1rem;
   font-weight: 700;
   color: #111827;

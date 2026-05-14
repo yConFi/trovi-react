@@ -132,8 +132,11 @@ function PropuestaModal({ usuario, onClose }) {
 
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#6b7280' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: fotosUrls.length >= 3 ? '#10b981' : '#6b7280' }}>
                       Fotos ({fotosUrls.length}/5)
+                      {fotosUrls.length < 3 && (
+                        <span style={{ fontWeight: 400, color: '#9ca3af' }}> — mínimo 3</span>
+                      )}
                     </span>
                     {fotosUrls.length < 5 && (
                       <label style={{ cursor: subiendoFoto ? 'not-allowed' : 'pointer', fontSize: '0.85rem', fontWeight: 600, color: subiendoFoto ? '#9ca3af' : '#ff5c3a', fontFamily: 'Inter, sans-serif' }}>
@@ -159,8 +162,8 @@ function PropuestaModal({ usuario, onClose }) {
                 </div>
 
                 {error && <p style={{ color: '#ef4444', fontSize: '0.85rem' }}>{error}</p>}
-                <button type="submit" className="btn btn--primary" disabled={cargando || subiendoFoto} style={{ marginTop: 4, padding: '13px', fontSize: '0.95rem' }}>
-                  {cargando ? 'Enviando…' : 'Enviar propuesta'}
+                <button type="submit" className="btn btn--primary" disabled={cargando || subiendoFoto || fotosUrls.length < 3} style={{ marginTop: 4, padding: '13px', fontSize: '0.95rem', opacity: fotosUrls.length < 3 ? 0.5 : 1 }}>
+                  {cargando ? 'Enviando…' : fotosUrls.length < 3 ? `Añade ${3 - fotosUrls.length} foto${3 - fotosUrls.length > 1 ? 's' : ''} más para continuar` : 'Enviar propuesta'}
                 </button>
               </form>
             </>

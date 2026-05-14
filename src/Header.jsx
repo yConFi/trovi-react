@@ -27,7 +27,7 @@ function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin,
             <button
               className="solo-movil"
               onClick={onLoginClick}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, alignItems: 'center' }}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="8" r="4"/>
@@ -86,7 +86,12 @@ function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin,
               )}
             </div>
           ) : (
-            <button className="btn btn--outline" onClick={onLoginClick}>Iniciar sesión</button>
+            <button
+              onClick={onLoginClick}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', fontWeight: 600, color: '#4b5563', padding: '8px 4px' }}
+            >
+              Iniciar sesión
+            </button>
           )}
         </nav>
       </div>

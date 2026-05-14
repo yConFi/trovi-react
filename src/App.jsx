@@ -352,14 +352,14 @@ function App() {
               <h2 className="destacados__titulo">
                 <span className="destacados__pulse" />
                 Recién añadidos
+                <svg
+                  width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  style={{ transform: destacadosExpandido ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease', flexShrink: 0 }}
+                >
+                  <polyline points="18 15 12 9 6 15"/>
+                </svg>
               </h2>
-              <svg
-                width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                style={{ transform: destacadosExpandido ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease', flexShrink: 0 }}
-              >
-                <polyline points="18 15 12 9 6 15"/>
-              </svg>
             </button>
           </div>
           {destacadosExpandido && (

@@ -29,7 +29,6 @@ function App() {
   const [tipo, setTipo] = useState("");
   const [precio, setPrecio] = useState("");
   const [chipActivo, setChipActivo] = useState("Todo");
-  const [hasBuscado, setHasBuscado] = useState(true);
   const [restauranteActivo, setRestauranteActivo] = useState(null);
   const [editandoRestaurante, setEditandoRestaurante] = useState(false);
   const [orden, setOrden] = useState("");
@@ -143,16 +142,11 @@ function App() {
     return 0;
   });
 
-  function buscar() {
-    setHasBuscado(true);
-  }
-
   function limpiar() {
     setCiudad("");
     setTipo("");
     setPrecio("");
     setChipActivo("Todo");
-    setHasBuscado(false);
     setOrden("");
   }
 
@@ -185,7 +179,6 @@ function App() {
                 placeholder="Ciudad o zona"
                 value={ciudad}
                 onChange={e => setCiudad(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && buscar()}
               />
             </div>
             <div className="search-bar__divider"></div>
@@ -200,7 +193,6 @@ function App() {
                 placeholder="Tipo de comida"
                 value={tipo}
                 onChange={e => setTipo(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && buscar()}
               />
             </div>
             <div className="search-bar__divider"></div>
@@ -212,7 +204,7 @@ function App() {
               </svg>
               <PrecioDropdown value={precio} onChange={setPrecio} />
             </div>
-            <button className="btn btn--primary search-bar__btn" onClick={buscar}>Buscar</button>
+            <button className="btn btn--primary search-bar__btn">Buscar</button>
           </div>
         </div>
       </section>
@@ -223,7 +215,7 @@ function App() {
             <button
               key={chip}
               className={`filter-chip${chipActivo === chip ? ' filter-chip--active' : ''}`}
-              onClick={() => { setChipActivo(chip); setHasBuscado(true); }}
+              onClick={() => setChipActivo(chip)}
             >
               {chip}
             </button>
@@ -241,7 +233,7 @@ function App() {
       </section>
 
       <main className="container results">
-        {hasBuscado && filtrados.length > 0 && (
+        {filtrados.length > 0 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <p style={{ fontSize: '0.9rem', color: '#6b7280' }}>
               <span style={{ fontWeight: 600, color: '#111827' }}>{filtrados.length}</span> {filtrados.length === 1 ? 'sitio encontrado' : 'sitios encontrados'}
@@ -253,29 +245,6 @@ function App() {
           <div className="empty-state">
             <span className="empty-state__icon">⏳</span>
             <h3>Cargando restaurantes…</h3>
-          </div>
-        ) : !hasBuscado ? (
-          <div className="welcome-state">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ff5c3a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 20 }}>
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-              <circle cx="12" cy="9" r="2.5"/>
-            </svg>
-            <h2>¿Dónde comemos hoy?</h2>
-            <p>Filtra por ciudad, tipo de comida o precio<br />y descubre sitios que no conocías.</p>
-            <div className="welcome-state__hints">
-              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-                Por ciudad
-              </button>
-              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
-                Por tipo
-              </button>
-              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M17 6.5A7 7 0 1 0 17 17.5"/><path d="M4 10h10"/><path d="M4 14h10"/></svg>
-                Por precio
-              </button>
-            </div>
           </div>
         ) : filtrados.length === 0 ? (
           <div className="empty-state">

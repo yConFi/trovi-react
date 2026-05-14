@@ -348,64 +348,6 @@ a {
 }
 
 /* ===========================
-   WELCOME STATE
-=========================== */
-.welcome-state {
-  text-align: center;
-  padding: 80px 24px;
-}
-
-.welcome-state__icon {
-  font-size: 4rem;
-  display: block;
-  margin-bottom: 20px;
-}
-
-.welcome-state h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 12px;
-}
-
-.welcome-state p {
-  font-size: 1rem;
-  color: #6b7280;
-  line-height: 1.6;
-  max-width: 400px;
-  margin: 0 auto 28px;
-}
-
-.welcome-state__hints {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.welcome-hint {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #fff7f5;
-  border: 1.5px solid #ffd5cc;
-  color: #ff5c3a;
-  font-size: 0.85rem;
-  font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  padding: 8px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.welcome-hint:hover {
-  background: #ff5c3a;
-  color: white;
-  border-color: #ff5c3a;
-}
-
-/* ===========================
    EMPTY STATE
 =========================== */
 .empty-state {

@@ -211,16 +211,6 @@ function App() {
               <PrecioDropdown value={precio} onChange={setPrecio} />
             </div>
             <button className="btn btn--primary search-bar__btn" onClick={buscar}>Buscar</button>
-            {hayFiltros && (
-              <button
-                onClick={limpiar}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: '#9ca3af', whiteSpace: 'nowrap', padding: '0 8px', flexShrink: 0 }}
-                onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                onMouseLeave={e => e.currentTarget.style.color = '#9ca3af'}
-              >
-                ✕ Limpiar
-              </button>
-            )}
           </div>
         </div>
       </section>
@@ -236,6 +226,15 @@ function App() {
               {chip}
             </button>
           ))}
+          {hayFiltros && (
+            <button
+              onClick={limpiar}
+              className="filter-chip"
+              style={{ color: '#ef4444', borderColor: '#fca5a5' }}
+            >
+              ✕ Limpiar
+            </button>
+          )}
         </div>
       </section>
 

@@ -80,7 +80,7 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
           <label style={labelStyle}>Precio medio (€ p.p.)</label>
           <input style={inputStyle} type="number" value={form.precioMedio} onChange={e => set('precioMedio', e.target.value)} placeholder="Ej: 25" />
         </div>
-        <div>
+        <div style={{ gridColumn: 'span 2' }}>
           <label style={labelStyle}>URL de foto</label>
           <input style={inputStyle} value={form.fotoUrl} onChange={e => set('fotoUrl', e.target.value)} placeholder="https://..." />
         </div>

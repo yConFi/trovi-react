@@ -233,11 +233,20 @@ function App() {
           <div className="welcome-state">
             <span className="welcome-state__icon">🗺️</span>
             <h2>¿Dónde comemos hoy?</h2>
-            <p>Usa los filtros de arriba para descubrir sitios que no conocías.<br />Ciudad, tipo de comida, precio — tú decides.</p>
+            <p>Filtra por ciudad, tipo de comida o precio<br />y descubre sitios que no conocías.</p>
             <div className="welcome-state__hints">
-              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>📍 Por ciudad</button>
-              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>🍽️ Por tipo</button>
-              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>💶 Por precio</button>
+              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                Por ciudad
+              </button>
+              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+                Por tipo
+              </button>
+              <button className="welcome-hint" onClick={() => setHasBuscado(true)}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M17 6.5A7 7 0 1 0 17 17.5"/><path d="M4 10h10"/><path d="M4 14h10"/></svg>
+                Por precio
+              </button>
             </div>
           </div>
         ) : filtrados.length === 0 ? (

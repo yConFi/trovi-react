@@ -384,6 +384,9 @@ a {
 }
 
 .welcome-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: #fff7f5;
   border: 1.5px solid #ffd5cc;
   color: #ff5c3a;

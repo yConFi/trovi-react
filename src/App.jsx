@@ -197,7 +197,10 @@ function App() {
         setRestaurantes(mapeados);
 
         if (ridInicial.current) {
+          console.log('[Trovi] rid buscado:', ridInicial.current);
+          console.log('[Trovi] IDs disponibles:', mapeados.map(r => r.id));
           const r = mapeados.find(r => r.id === ridInicial.current);
+          console.log('[Trovi] restaurante encontrado:', r);
           if (r) setRestauranteActivo(r);
           ridInicial.current = null;
         }

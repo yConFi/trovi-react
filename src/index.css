@@ -322,10 +322,9 @@ a {
    DESTACADOS
 =========================== */
 .destacados {
-  padding: 24px 0 0;
-  border-bottom: 1px solid #eee8e4;
-  background: linear-gradient(to bottom, #fdf7f5, #fff9f7);
-  position: relative;
+  padding: 28px 0 0;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
 }
 
 .destacados__header {
@@ -343,24 +342,12 @@ a {
 .destacados__titulo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.75rem;
+  gap: 7px;
+  font-size: 1rem;
   font-weight: 700;
-  color: #ff5c3a;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  color: #111827;
   margin-bottom: 0;
   padding: 0;
-}
-
-.destacados__titulo::before {
-  content: '';
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ff5c3a;
-  flex-shrink: 0;
 }
 
 .destacados__scroll-wrap {
@@ -372,9 +359,9 @@ a {
   position: absolute;
   right: 0;
   top: 0;
-  bottom: 20px;
-  width: 72px;
-  background: linear-gradient(to right, transparent, #fff9f7);
+  bottom: 24px;
+  width: 64px;
+  background: linear-gradient(to right, transparent, white);
   pointer-events: none;
   z-index: 1;
 }

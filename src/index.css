@@ -353,6 +353,16 @@ a {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .empty-state {
   text-align: center;
   padding: 80px 24px;
@@ -679,6 +689,7 @@ a {
   .modal-overlay {
     padding: 0;
     align-items: flex-end;
+    animation: fadeIn 0.25s ease;
   }
 
   .modal {
@@ -686,6 +697,7 @@ a {
     max-height: 88vh;
     width: 100%;
     max-width: 100%;
+    animation: slideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   .modal__image {

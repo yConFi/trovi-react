@@ -54,7 +54,7 @@ function App() {
   }
 
   function onModalTouchEnd() {
-    if (dragOffset.current > 100) {
+    if (dragOffset.current > 180) {
       setRestauranteActivo(null);
     } else if (modalRef.current) {
       modalRef.current.style.transform = '';

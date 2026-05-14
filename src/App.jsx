@@ -29,7 +29,7 @@ function App() {
   const [tipo, setTipo] = useState("");
   const [precio, setPrecio] = useState("");
   const [chipActivo, setChipActivo] = useState("Todo");
-  const [hasBuscado, setHasBuscado] = useState(false);
+  const [hasBuscado, setHasBuscado] = useState(true);
   const [restauranteActivo, setRestauranteActivo] = useState(null);
   const [editandoRestaurante, setEditandoRestaurante] = useState(false);
   const [orden, setOrden] = useState("");

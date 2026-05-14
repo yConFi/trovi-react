@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin, onPerfil }) {
+function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin, onPerfil, onExplorar, onComoFunciona }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const ref = useRef(null);
 
@@ -19,8 +19,8 @@ function Header({ usuario, esAdmin, onLoginClick, onLogout, onProponer, onAdmin,
       <div className="container header__inner">
         <a href="#" className="logo">Trovi</a>
         <nav className="nav">
-          <a href="#">Explorar</a>
-          <a href="#">Cómo funciona</a>
+          <a href="#" onClick={e => { e.preventDefault(); onExplorar(); }}>Explorar</a>
+          <a href="#" onClick={e => { e.preventDefault(); onComoFunciona(); }}>Cómo funciona</a>
           <button className="btn btn--outline" onClick={onProponer}>+ Proponer sitio</button>
 
           {!usuario && (

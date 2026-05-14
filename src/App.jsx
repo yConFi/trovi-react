@@ -34,6 +34,7 @@ function App() {
   const [restauranteActivo, setRestauranteActivo] = useState(null);
   const [editandoRestaurante, setEditandoRestaurante] = useState(false);
   const [orden, setOrden] = useState("");
+  const [comoFuncionaAbierto, setComoFuncionaAbierto] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setCiudadDebounced(ciudad), 300);
@@ -176,6 +177,8 @@ function App() {
         onProponer={() => usuario ? setModalPropuestaAbierto(true) : setModalAuthAbierto(true)}
         onAdmin={() => setAdminAbierto(true)}
         onPerfil={() => setPerfilAbierto(true)}
+        onExplorar={() => document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' })}
+        onComoFunciona={() => setComoFuncionaAbierto(true)}
       />
 
       <section className="hero">
@@ -429,6 +432,50 @@ function App() {
           </div>
         </div>
       )}
+      {comoFuncionaAbierto && (
+        <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setComoFuncionaAbierto(false)}>
+          <div className="modal" style={{ maxWidth: 480 }}>
+            <button className="modal__close" onClick={() => setComoFuncionaAbierto(false)}>✕</button>
+            <div className="modal__body" style={{ paddingTop: 36 }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#111827', marginBottom: 8 }}>¿Cómo funciona Trovi?</h2>
+              <p style={{ fontSize: '0.95rem', color: '#6b7280', marginBottom: 28 }}>Descubrir dónde comer nunca había sido tan fácil.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                {[
+                  {
+                    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff5c3a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>,
+                    titulo: 'Pon tus filtros',
+                    texto: 'Ciudad, tipo de cocina y precio máximo. Combínalos como quieras.',
+                  },
+                  {
+                    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff5c3a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>,
+                    titulo: 'Descubre sitios',
+                    texto: 'Ve restaurantes, bares y cafeterías seleccionados a mano para ti.',
+                  },
+                  {
+                    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff5c3a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+                    titulo: 'Guarda tus favoritos',
+                    texto: 'Crea tu lista personal y tenla siempre a mano.',
+                  },
+                ].map(({ icon, titulo, texto }) => (
+                  <div key={titulo} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: '#fff7f5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {icon}
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 700, fontSize: '0.95rem', color: '#111827', marginBottom: 4 }}>{titulo}</p>
+                      <p style={{ fontSize: '0.9rem', color: '#6b7280', lineHeight: 1.5 }}>{texto}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button className="btn btn--primary" style={{ width: '100%', marginTop: 28, padding: '12px' }} onClick={() => { setComoFuncionaAbierto(false); document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                Explorar sitios
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {editandoRestaurante && restauranteActivo && (
         <EditarRestauranteModal
           restaurante={restauranteActivo}

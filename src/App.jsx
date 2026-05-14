@@ -440,6 +440,12 @@ function App() {
             setRestauranteActivo(actualizado);
             setEditandoRestaurante(false);
           }}
+          onEliminar={async id => {
+            await supabase.from('restaurantes').delete().eq('id', id);
+            setRestaurantes(prev => prev.filter(r => r.id !== id));
+            setRestauranteActivo(null);
+            setEditandoRestaurante(false);
+          }}
         />
       )}
     </div>

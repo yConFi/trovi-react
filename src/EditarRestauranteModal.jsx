@@ -19,7 +19,7 @@ const labelStyle = {
   display: 'block',
 };
 
-function EditarRestauranteModal({ restaurante, onGuardar, onCerrar }) {
+function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }) {
   const [form, setForm] = useState({
     nombre: restaurante.nombre ?? '',
     emoji: restaurante.emoji ?? '🍽️',
@@ -34,6 +34,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onCerrar }) {
     fotoUrl: restaurante.fotoUrl ?? '',
   });
   const [guardando, setGuardando] = useState(false);
+  const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [estadoFoto, setEstadoFoto] = useState(null);
 
@@ -174,11 +175,39 @@ function EditarRestauranteModal({ restaurante, onGuardar, onCerrar }) {
               <label style={labelStyle}>¿Por qué ir?</label>
               <textarea style={{ ...inputStyle, resize: 'vertical' }} rows={2} value={form.porQueIr} onChange={e => set('porQueIr', e.target.value)} />
             </div>
-            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-              <button className="btn btn--primary" style={{ padding: '10px 24px' }} onClick={handleGuardar} disabled={guardando}>
-                {guardando ? 'Guardando…' : '✓ Guardar cambios'}
-              </button>
-              <button className="btn btn--outline" style={{ padding: '10px 20px' }} onClick={onCerrar}>Cancelar</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, gap: 10 }}>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button className="btn btn--primary" style={{ padding: '10px 24px' }} onClick={handleGuardar} disabled={guardando}>
+                  {guardando ? 'Guardando…' : '✓ Guardar cambios'}
+                </button>
+                <button className="btn btn--outline" style={{ padding: '10px 20px' }} onClick={onCerrar}>Cancelar</button>
+              </div>
+              {!confirmandoEliminar ? (
+                <button
+                  onClick={() => setConfirmandoEliminar(true)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem', color: '#ef4444', fontFamily: 'Inter, sans-serif', padding: '10px 4px' }}
+                >
+                  Eliminar restaurante
+                </button>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: '0.85rem', color: '#ef4444', fontWeight: 600 }}>¿Seguro?</span>
+                  <button
+                    className="btn"
+                    style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#ef4444', color: 'white', border: 'none' }}
+                    onClick={() => onEliminar(restaurante.id)}
+                  >
+                    Sí, eliminar
+                  </button>
+                  <button
+                    className="btn btn--outline"
+                    style={{ padding: '8px 14px', fontSize: '0.85rem' }}
+                    onClick={() => setConfirmandoEliminar(false)}
+                  >
+                    No
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

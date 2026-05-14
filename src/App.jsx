@@ -37,6 +37,12 @@ function App() {
   const [comoFuncionaAbierto, setComoFuncionaAbierto] = useState(false);
 
   useEffect(() => {
+    const anyOpen = !!(restauranteActivo || comoFuncionaAbierto || editandoRestaurante || adminAbierto || perfilAbierto || modalPropuestaAbierto || modalAuthAbierto);
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [restauranteActivo, comoFuncionaAbierto, editandoRestaurante, adminAbierto, perfilAbierto, modalPropuestaAbierto, modalAuthAbierto]);
+
+  useEffect(() => {
     const t = setTimeout(() => setCiudadDebounced(ciudad), 300);
     return () => clearTimeout(t);
   }, [ciudad]);

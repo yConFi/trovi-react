@@ -350,6 +350,9 @@ a {
 /* ===========================
    EMPTY STATE
 =========================== */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 .empty-state {
   text-align: center;
   padding: 80px 24px;
@@ -357,9 +360,8 @@ a {
 }
 
 .empty-state__icon {
-  font-size: 3rem;
   display: block;
-  margin-bottom: 16px;
+  margin: 0 auto 16px;
 }
 
 .empty-state h3 {

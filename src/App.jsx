@@ -204,7 +204,7 @@ function App() {
               </svg>
               <PrecioDropdown value={precio} onChange={setPrecio} />
             </div>
-            <button className="btn btn--primary search-bar__btn">Buscar</button>
+            <button className="btn btn--primary search-bar__btn" onClick={() => document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' })}>Buscar</button>
           </div>
         </div>
       </section>
@@ -232,7 +232,7 @@ function App() {
         </div>
       </section>
 
-      <main className="container results">
+      <main id="resultados" className="container results">
         {filtrados.length > 0 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <p style={{ fontSize: '0.9rem', color: '#6b7280' }}>
@@ -243,12 +243,18 @@ function App() {
         )}
         {cargando ? (
           <div className="empty-state">
-            <span className="empty-state__icon">⏳</span>
+            <svg className="empty-state__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ff5c3a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
             <h3>Cargando restaurantes…</h3>
           </div>
         ) : filtrados.length === 0 ? (
           <div className="empty-state">
-            <span className="empty-state__icon">🍽️</span>
+            <svg className="empty-state__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+              <path d="M7 2v20"/>
+              <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+            </svg>
             <h3>Sin resultados</h3>
             <p>No hemos encontrado sitios con esos filtros. Prueba a cambiar la ciudad o el tipo de comida.</p>
           </div>

@@ -58,6 +58,11 @@ function PropuestaModal({ usuario, onClose }) {
       setError('Ha ocurrido un error. Inténtalo de nuevo.');
     } else {
       setEnviado(true);
+      fetch('/api/notify-propuesta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, ciudad, barrio, tipo, descripcion, direccion, fotos_urls: fotosUrls, user_email: usuario.email }),
+      }).catch(() => {});
     }
 
     setCargando(false);

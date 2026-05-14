@@ -307,7 +307,7 @@ a {
   transition: all 0.15s ease;
 }
 
-.filter-chip:hover {
+.filter-chip:not(.filter-chip--active):hover {
   border-color: #ff5c3a;
   color: #ff5c3a;
 }
@@ -316,6 +316,11 @@ a {
   background: #ff5c3a;
   border-color: #ff5c3a;
   color: white;
+}
+
+.filter-chip--active:hover {
+  background: #e8502f;
+  border-color: #e8502f;
 }
 
 .filters--barrios {
@@ -338,6 +343,7 @@ a {
   border-color: #ff5c3a;
   color: #ff5c3a;
 }
+
 
 /* ===========================
    DESTACADOS

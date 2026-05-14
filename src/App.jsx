@@ -35,6 +35,7 @@ function App() {
   const [editandoRestaurante, setEditandoRestaurante] = useState(false);
   const [orden, setOrden] = useState("");
   const [comoFuncionaAbierto, setComoFuncionaAbierto] = useState(false);
+  const [linkCopiado, setLinkCopiado] = useState(false);
 
   const modalRef = useRef(null);
   const touchStartY = useRef(0);
@@ -55,7 +56,7 @@ function App() {
 
   function onModalTouchEnd() {
     if (dragOffset.current > window.innerHeight * 0.5) {
-      setRestauranteActivo(null);
+      cerrarModal();
     } else if (modalRef.current) {
       modalRef.current.style.transform = '';
       modalRef.current.style.transition = 'transform 0.3s ease';
@@ -107,6 +108,8 @@ function App() {
   async function abrirModal(restaurante) {
     setRestauranteActivo(restaurante);
     setMiValoracion(null);
+    setLinkCopiado(false);
+    window.history.replaceState(null, '', `?r=${restaurante.id}`);
     if (usuario) {
       const { data } = await supabase
         .from('valoraciones')
@@ -116,6 +119,19 @@ function App() {
         .single();
       if (data) setMiValoracion(data.puntuacion);
     }
+  }
+
+  function cerrarModal() {
+    setRestauranteActivo(null);
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+
+  function compartir() {
+    const url = `${window.location.origin}?r=${restauranteActivo.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setLinkCopiado(true);
+      setTimeout(() => setLinkCopiado(false), 2500);
+    });
   }
 
   async function valorar(puntuacion) {
@@ -182,6 +198,15 @@ function App() {
     }
     cargarRestaurantes();
   }, []);
+
+  useEffect(() => {
+    if (restaurantes.length === 0) return;
+    const rid = new URLSearchParams(window.location.search).get('r');
+    if (rid) {
+      const r = restaurantes.find(r => r.id === rid);
+      if (r) abrirModal(r);
+    }
+  }, [restaurantes]);
 
   const filtrados = restaurantes.filter(r => {
     const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase());
@@ -384,7 +409,7 @@ function App() {
       )}
 
       {restauranteActivo && (
-        <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setRestauranteActivo(null)}>
+        <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && cerrarModal()}>
           <div
             className="modal"
             ref={modalRef}
@@ -392,7 +417,7 @@ function App() {
             onTouchMove={onModalTouchMove}
             onTouchEnd={onModalTouchEnd}
           >
-            <button className="modal__close" onClick={() => setRestauranteActivo(null)}>✕</button>
+            <button className="modal__close" onClick={cerrarModal}>✕</button>
             {esAdmin && (
               <button
                 onClick={() => setEditandoRestaurante(true)}
@@ -467,6 +492,15 @@ function App() {
                   >
                     Ver en Google Maps
                   </a>
+                </div>
+                <div className="modal__info-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  <button
+                    onClick={compartir}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', color: linkCopiado ? '#10b981' : '#ff5c3a', fontWeight: 600 }}
+                  >
+                    {linkCopiado ? '¡Enlace copiado!' : 'Compartir restaurante'}
+                  </button>
                 </div>
               </div>
 

@@ -193,20 +193,20 @@ function App() {
           creadoEn: r.created_at,
         }));
         setRestaurantes(mapeados);
+
+        const rid = new URLSearchParams(window.location.search).get('r');
+        if (rid) {
+          const r = mapeados.find(r => r.id === rid);
+          if (r) {
+            setRestauranteActivo(r);
+            window.history.replaceState(null, '', `?r=${r.id}`);
+          }
+        }
       }
       setCargando(false);
     }
     cargarRestaurantes();
   }, []);
-
-  useEffect(() => {
-    if (restaurantes.length === 0) return;
-    const rid = new URLSearchParams(window.location.search).get('r');
-    if (rid) {
-      const r = restaurantes.find(r => r.id === rid);
-      if (r) abrirModal(r);
-    }
-  }, [restaurantes]);
 
   const filtrados = restaurantes.filter(r => {
     const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase());

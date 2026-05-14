@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from './Header';
 import RestaurantCard from './RestaurantCard';
 import PrecioDropdown from './PrecioDropdown';
@@ -35,6 +35,40 @@ function App() {
   const [editandoRestaurante, setEditandoRestaurante] = useState(false);
   const [orden, setOrden] = useState("");
   const [comoFuncionaAbierto, setComoFuncionaAbierto] = useState(false);
+
+  const modalRef = useRef(null);
+  const touchStartY = useRef(0);
+  const dragOffset = useRef(0);
+
+  function onModalTouchStart(e) {
+    touchStartY.current = e.touches[0].clientY;
+  }
+
+  function onModalTouchMove(e) {
+    const delta = e.touches[0].clientY - touchStartY.current;
+    if (delta > 0 && modalRef.current?.scrollTop === 0) {
+      dragOffset.current = delta;
+      modalRef.current.style.transform = `translateY(${delta}px)`;
+      modalRef.current.style.transition = 'none';
+    }
+  }
+
+  function onModalTouchEnd() {
+    if (dragOffset.current > 100) {
+      setRestauranteActivo(null);
+    } else if (modalRef.current) {
+      modalRef.current.style.transform = '';
+      modalRef.current.style.transition = 'transform 0.3s ease';
+    }
+    dragOffset.current = 0;
+  }
+
+  useEffect(() => {
+    if (modalRef.current) {
+      modalRef.current.style.transform = '';
+    }
+    dragOffset.current = 0;
+  }, [restauranteActivo]);
 
   useEffect(() => {
     const anyOpen = !!(restauranteActivo || comoFuncionaAbierto || editandoRestaurante || adminAbierto || perfilAbierto || modalPropuestaAbierto || modalAuthAbierto);
@@ -351,7 +385,13 @@ function App() {
 
       {restauranteActivo && (
         <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setRestauranteActivo(null)}>
-          <div className="modal">
+          <div
+            className="modal"
+            ref={modalRef}
+            onTouchStart={onModalTouchStart}
+            onTouchMove={onModalTouchMove}
+            onTouchEnd={onModalTouchEnd}
+          >
             <button className="modal__close" onClick={() => setRestauranteActivo(null)}>✕</button>
             {esAdmin && (
               <button

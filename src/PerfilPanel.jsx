@@ -8,7 +8,7 @@ const estadoConfig = {
   rechazado: { label: 'Rechazado', color: '#ef4444', bg: '#fee2e2' },
 };
 
-function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito }) {
+function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerRestaurante }) {
   const [propuestas, setPropuestas] = useState([]);
   const [restaurantesFav, setRestaurantesFav] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -58,7 +58,7 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito }) {
                   restaurante={r}
                   esFavorito={favoritos.includes(r.id)}
                   onToggleFavorito={() => onToggleFavorito(r.id)}
-                  onClick={() => onClose()}
+                  onClick={() => onVerRestaurante(r)}
                 />
               ))}
             </div>

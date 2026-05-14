@@ -294,6 +294,7 @@ function App() {
           onClose={() => setPerfilAbierto(false)}
           favoritos={favoritos}
           onToggleFavorito={toggleFavorito}
+          onVerRestaurante={r => { setPerfilAbierto(false); abrirModal(r); }}
         />
       )}
 

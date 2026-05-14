@@ -326,7 +326,7 @@ function App() {
         </div>
       </section>
 
-      {barriosDisponibles.length >= 2 && (
+      {barriosDisponibles.length >= 1 && (
         <section className="filters filters--barrios">
           <div className="container filters__inner">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>

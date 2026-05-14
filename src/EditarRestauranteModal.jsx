@@ -119,11 +119,11 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
                 <input style={inputStyle} value={form.emoji} onChange={e => set('emoji', e.target.value)} placeholder="🍽️" />
               </div>
               <div>
-                <label style={labelStyle}>Ciudad</label>
+                <label style={labelStyle}>Provincia</label>
                 <input style={inputStyle} value={form.ciudad} onChange={e => set('ciudad', e.target.value)} />
               </div>
               <div>
-                <label style={labelStyle}>Barrio</label>
+                <label style={labelStyle}>Barrio, pueblo o zona</label>
                 <input style={inputStyle} value={form.barrio} onChange={e => set('barrio', e.target.value)} />
               </div>
               <div>

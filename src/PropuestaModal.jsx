@@ -124,8 +124,8 @@ function PropuestaModal({ usuario, onClose }) {
               </p>
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <input type="text" placeholder="Nombre del restaurante *" value={nombre} onChange={e => setNombre(e.target.value)} required style={inputStyle} />
-                <input type="text" placeholder="Ciudad *" value={ciudad} onChange={e => setCiudad(e.target.value)} required style={inputStyle} />
-                <input type="text" placeholder="Barrio (opcional)" value={barrio} onChange={e => setBarrio(e.target.value)} style={inputStyle} />
+                <input type="text" placeholder="Provincia *" value={ciudad} onChange={e => setCiudad(e.target.value)} required style={inputStyle} />
+                <input type="text" placeholder="Barrio, pueblo o zona (opcional)" value={barrio} onChange={e => setBarrio(e.target.value)} style={inputStyle} />
                 <input type="text" placeholder="Tipo de cocina *" value={tipo} onChange={e => setTipo(e.target.value)} required style={inputStyle} />
                 <input type="text" placeholder="Dirección (opcional)" value={direccion} onChange={e => setDireccion(e.target.value)} style={inputStyle} />
                 <textarea placeholder="¿Por qué merece estar en Trovi? (opcional)" value={descripcion} onChange={e => setDescripcion(e.target.value)} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />

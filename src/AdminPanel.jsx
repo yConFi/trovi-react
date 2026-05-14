@@ -34,9 +34,24 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
     fotoUrl: '',
   });
   const [publicando, setPublicando] = useState(false);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
 
   function set(field, value) {
     setForm(prev => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSubirFoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSubiendoFoto(true);
+    const ext = file.name.split('.').pop();
+    const path = `${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('restaurantes').upload(path, file);
+    if (!error) {
+      const { data } = supabase.storage.from('restaurantes').getPublicUrl(path);
+      set('fotoUrl', data.publicUrl);
+    }
+    setSubiendoFoto(false);
   }
 
   async function handlePublicar() {
@@ -81,8 +96,22 @@ function FormularioAprobacion({ propuesta, onPublicar, onCancelar }) {
           <input style={inputStyle} type="number" value={form.precioMedio} onChange={e => set('precioMedio', e.target.value)} placeholder="Ej: 25" />
         </div>
         <div style={{ gridColumn: 'span 2' }}>
-          <label style={labelStyle}>URL de foto</label>
-          <input style={inputStyle} value={form.fotoUrl} onChange={e => set('fotoUrl', e.target.value)} placeholder="https://..." />
+          <label style={labelStyle}>Foto</label>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <input style={{ ...inputStyle, flex: 1 }} value={form.fotoUrl} onChange={e => set('fotoUrl', e.target.value)} placeholder="https://... o sube una imagen" />
+            <label style={{
+              padding: '10px 16px', border: '1.5px solid #e5e7eb', borderRadius: 10,
+              cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#4b5563',
+              background: 'white', whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif',
+              opacity: subiendoFoto ? 0.6 : 1,
+            }}>
+              {subiendoFoto ? 'Subiendo…' : '📎 Subir'}
+              <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleSubirFoto} disabled={subiendoFoto} />
+            </label>
+          </div>
+          {form.fotoUrl && (
+            <img src={form.fotoUrl} alt="preview" style={{ marginTop: 10, width: '100%', height: 140, objectFit: 'cover', borderRadius: 10 }} />
+          )}
         </div>
       </div>
       <div>

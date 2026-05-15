@@ -34,12 +34,14 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
     porQueIr: restaurante.porQueIr ?? '',
     precioMedio: restaurante.precioMedio ?? '',
     fotoUrl: restaurante.fotoUrl ?? '',
+    fotosUrls: restaurante.fotosUrls ?? [],
     destacado: restaurante.destacado ?? false,
   });
   const [guardando, setGuardando] = useState(false);
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [estadoFoto, setEstadoFoto] = useState(null);
+  const [subiendoFotoAdicional, setSubiendoFotoAdicional] = useState(false);
 
   function set(field, value) {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -63,6 +65,25 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
     setSubiendoFoto(false);
   }
 
+  async function handleSubirFotoAdicional(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSubiendoFotoAdicional(true);
+    const ext = file.name.split('.').pop();
+    const path = `${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('restaurantes').upload(path, file);
+    if (!error) {
+      const { data } = supabase.storage.from('restaurantes').getPublicUrl(path);
+      set('fotosUrls', [...form.fotosUrls, data.publicUrl]);
+    }
+    setSubiendoFotoAdicional(false);
+    e.target.value = '';
+  }
+
+  function eliminarFotoAdicional(url) {
+    set('fotosUrls', form.fotosUrls.filter(u => u !== url));
+  }
+
   async function handleGuardar() {
     setGuardando(true);
     const tipoArray = form.tipo
@@ -81,6 +102,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
       por_que_ir: form.porQueIr,
       precio_medio: parseFloat(form.precioMedio) || 0,
       foto_url: form.fotoUrl || null,
+      fotos_urls: form.fotosUrls,
       destacado: form.destacado,
     }).eq('id', restaurante.id);
 
@@ -98,6 +120,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
         porQueIr: form.porQueIr,
         precioMedio: parseFloat(form.precioMedio) || 0,
         fotoUrl: form.fotoUrl || null,
+        fotosUrls: form.fotosUrls,
         destacado: form.destacado,
       });
     }
@@ -145,7 +168,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
                 <input style={inputStyle} type="number" value={form.precioMedio} onChange={e => set('precioMedio', e.target.value)} />
               </div>
               <div style={{ gridColumn: 'span 2' }}>
-                <label style={labelStyle}>Foto</label>
+                <label style={labelStyle}>Foto principal (fachada)</label>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                   <input style={{ ...inputStyle, flex: 1 }} value={form.fotoUrl} onChange={e => set('fotoUrl', e.target.value)} placeholder="https://... o sube una imagen" />
                   <label style={{
@@ -170,6 +193,26 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
                 {estadoFoto === 'ok' && <p style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 600, marginTop: 6 }}>✓ Foto subida correctamente</p>}
                 {estadoFoto === 'error' && <p style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600, marginTop: 6 }}>✕ Error al subir la foto.</p>}
                 {form.fotoUrl && <img src={form.fotoUrl} alt="preview" style={{ marginTop: 10, width: '100%', height: 140, objectFit: 'cover', borderRadius: 10 }} />}
+              </div>
+              <div style={{ gridColumn: 'span 2' }}>
+                <label style={labelStyle}>Fotos adicionales</label>
+                {form.fotosUrls.length > 0 && (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10 }}>
+                    {form.fotosUrls.map(url => (
+                      <div key={url} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', aspectRatio: '1' }}>
+                        <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button
+                          onClick={() => eliminarFotoAdicional(url)}
+                          style={{ position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer', color: 'white', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >✕</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <label style={{ padding: '10px 16px', border: '1.5px dashed #e5e7eb', borderRadius: 10, cursor: subiendoFotoAdicional ? 'default' : 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#6b7280', background: '#fafafa', display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'Inter, sans-serif', opacity: subiendoFotoAdicional ? 0.6 : 1 }}>
+                  {subiendoFotoAdicional ? 'Subiendo…' : '+ Añadir foto'}
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleSubirFotoAdicional} disabled={subiendoFotoAdicional} />
+                </label>
               </div>
             </div>
             <div>

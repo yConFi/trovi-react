@@ -5,13 +5,13 @@ import PrecioDropdown from './PrecioDropdown';
 import AuthModal from './AuthModal';
 import PropuestaModal from './PropuestaModal';
 import AdminPanel from './AdminPanel';
-import ValoracionEstrellas from './ValoracionEstrellas';
 import OrdenDropdown from './OrdenDropdown';
 import EditarRestauranteModal from './EditarRestauranteModal';
 import PerfilPanel from './PerfilPanel';
+import RestauranteModal from './RestauranteModal';
 import { supabase } from './supabase';
 import { useSwipeClose } from './useSwipeClose';
-
+import { mapearRestaurante } from './utils';
 
 function App() {
   const ridInicial = useRef(
@@ -79,40 +79,6 @@ function App() {
   function onScrollClick(e) {
     if (didDrag.current) e.stopPropagation();
   }
-
-  const modalRef = useRef(null);
-  const touchStartY = useRef(0);
-  const dragOffset = useRef(0);
-
-  function onModalTouchStart(e) {
-    touchStartY.current = e.touches[0].clientY;
-  }
-
-  function onModalTouchMove(e) {
-    const delta = e.touches[0].clientY - touchStartY.current;
-    if (delta > 0 && modalRef.current?.scrollTop === 0) {
-      dragOffset.current = delta;
-      modalRef.current.style.transform = `translateY(${delta}px)`;
-      modalRef.current.style.transition = 'none';
-    }
-  }
-
-  function onModalTouchEnd() {
-    if (dragOffset.current > window.innerHeight * 0.5) {
-      cerrarModal();
-    } else if (modalRef.current) {
-      modalRef.current.style.transform = '';
-      modalRef.current.style.transition = 'transform 0.3s ease';
-    }
-    dragOffset.current = 0;
-  }
-
-  useEffect(() => {
-    if (modalRef.current) {
-      modalRef.current.style.transform = '';
-    }
-    dragOffset.current = 0;
-  }, [restauranteActivo]);
 
   useEffect(() => {
     const anyOpen = !!(restauranteActivo || comoFuncionaAbierto || editandoRestaurante || adminAbierto || perfilAbierto || modalPropuestaAbierto || modalAuthAbierto);
@@ -219,25 +185,7 @@ function App() {
       if (error) {
         console.error('Error cargando restaurantes:', error);
       } else {
-        const mapeados = data.map(r => ({
-          id: r.id,
-          nombre: r.nombre,
-          emoji: r.emoji,
-          tipo: Array.isArray(r.tipo) ? r.tipo : (r.tipo ?? '').split(',').map(t => t.trim()).filter(Boolean),
-          valoracion: r.valoracion,
-          numValoraciones: r.num_valoraciones,
-          ciudad: r.ciudad,
-          barrio: r.barrio,
-          direccion: r.direccion,
-          horario: r.horario,
-          descripcion: r.descripcion,
-          porQueIr: r.por_que_ir,
-          precioMedio: r.precio_medio,
-          precio: r.precio,
-          fotoUrl: r.foto_url,
-          creadoEn: r.created_at,
-          destacado: r.destacado ?? false,
-        }));
+        const mapeados = data.map(mapearRestaurante);
         setRestaurantes(mapeados);
 
         if (ridInicial.current) {
@@ -257,7 +205,7 @@ function App() {
     const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase());
     const coincideTipo = tipoDebounced === "" || r.tipo.some(t => t.toLowerCase().includes(tipoDebounced.toLowerCase()));
     const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
-    const coincideChip = chipsActivos.length === 0 || chipsActivos.every(chip => r.tipo.includes(chip));
+    const coincideChip = chipsActivos.length === 0 || chipsActivos.some(chip => r.tipo.includes(chip));
     return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;
   });
 
@@ -304,7 +252,7 @@ function App() {
       <section className="hero">
         <div className="container hero__inner">
           <h1 className="hero__title">Descubre dónde comer,<br />sin saber qué buscar.</h1>
-          <p className="hero__subtitle">Pon tus filtros. Trovi hace el resto.</p>
+          <p className="hero__subtitle">Pon tus filtros y descubre sitios que no conocías.</p>
           <div className="search-bar">
             <div className="search-bar__field">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
@@ -341,7 +289,7 @@ function App() {
               </svg>
               <PrecioDropdown value={precio} onChange={setPrecio} />
             </div>
-            <button className="btn btn--primary search-bar__btn" onClick={() => document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' })}>Buscar</button>
+            <button className="btn btn--primary search-bar__btn" onClick={() => document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' })}>Ver sitios</button>
           </div>
         </div>
       </section>
@@ -387,7 +335,7 @@ function App() {
         </section>
       )}
 
-      {filtrados.length > 0 && (
+      {restaurantes.length > 0 && (
         <section className="destacados">
           <div className="container">
             <button
@@ -419,7 +367,7 @@ function App() {
               onMouseLeave={onScrollMouseUp}
               onClickCapture={onScrollClick}
             >
-                {[...filtrados]
+                {[...restaurantes]
                   .sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn))
                   .slice(0, 8)
                   .map(r => (
@@ -481,9 +429,9 @@ function App() {
           </div>
         ) : (
           <div className="cards-grid">
-            {filtrados.map((r, i) => (
+            {filtrados.map(r => (
               <RestaurantCard
-                key={i}
+                key={r.id}
                 restaurante={r}
                 esFavorito={favoritos.includes(r.id)}
                 onToggleFavorito={() => toggleFavorito(r.id)}
@@ -499,8 +447,8 @@ function App() {
           <span className="logo">Trovi</span>
           <span>© {new Date().getFullYear()} Trovi · Hecho con ♥ en España</span>
           <div style={{ display: 'flex', gap: 20 }}>
-            <a href="#" style={{ color: '#9ca3af' }} onMouseEnter={e => e.target.style.color='white'} onMouseLeave={e => e.target.style.color='#9ca3af'}>Explorar</a>
-            <a href="#" style={{ color: '#9ca3af' }} onMouseEnter={e => e.target.style.color='white'} onMouseLeave={e => e.target.style.color='#9ca3af'} onClick={e => { e.preventDefault(); usuario ? setModalPropuestaAbierto(true) : setModalAuthAbierto(true); }}>Proponer sitio</a>
+            <button className="footer__link" onClick={() => document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' })}>Explorar</button>
+            <button className="footer__link" onClick={() => usuario ? setModalPropuestaAbierto(true) : setModalAuthAbierto(true)}>Proponer sitio</button>
           </div>
         </div>
       </footer>
@@ -510,15 +458,7 @@ function App() {
           onClose={() => setAdminAbierto(false)}
           onPublicado={async () => {
             const { data } = await supabase.from('restaurantes').select('*');
-            if (data) setRestaurantes(data.map(r => ({
-              id: r.id, nombre: r.nombre, emoji: r.emoji,
-              tipo: Array.isArray(r.tipo) ? r.tipo : (r.tipo ?? '').split(',').map(t => t.trim()).filter(Boolean),
-              valoracion: r.valoracion, numValoraciones: r.num_valoraciones,
-              ciudad: r.ciudad, barrio: r.barrio, direccion: r.direccion,
-              horario: r.horario, descripcion: r.descripcion,
-              porQueIr: r.por_que_ir, precioMedio: r.precio_medio,
-              precio: r.precio, fotoUrl: r.foto_url, creadoEn: r.created_at,
-            })));
+            if (data) setRestaurantes(data.map(mapearRestaurante));
           }}
         />
       )}
@@ -541,110 +481,20 @@ function App() {
       )}
 
       {restauranteActivo && (
-        <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && cerrarModal()}>
-          <div
-            className="modal"
-            ref={modalRef}
-            onTouchStart={onModalTouchStart}
-            onTouchMove={onModalTouchMove}
-            onTouchEnd={onModalTouchEnd}
-          >
-            <button className="modal__close" onClick={cerrarModal}>✕</button>
-            {esAdmin && (
-              <button
-                onClick={() => setEditandoRestaurante(true)}
-                style={{
-                  position: 'absolute', top: 16, right: 96, zIndex: 1,
-                  background: 'rgba(0,0,0,0.06)', border: 'none', borderRadius: '50%',
-                  width: 32, height: 32, cursor: 'pointer', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.12)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-              </button>
-            )}
-            <button
-              onClick={() => toggleFavorito(restauranteActivo.id)}
-              style={{
-                position: 'absolute', top: 16, right: 56, zIndex: 1,
-                background: 'rgba(0,0,0,0.06)', border: 'none', borderRadius: '50%',
-                width: 32, height: 32, cursor: 'pointer', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.12)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill={favoritos.includes(restauranteActivo.id) ? '#ff5c3a' : 'none'} stroke={favoritos.includes(restauranteActivo.id) ? '#ff5c3a' : '#4b5563'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-            </button>
-            <div className="modal__image">
-              {restauranteActivo.fotoUrl
-                ? <img src={restauranteActivo.fotoUrl} alt={restauranteActivo.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '20px 20px 0 0' }} />
-                : restauranteActivo.emoji}
-            </div>
-            <div className="modal__body">
-              <div className="modal__tags">
-                {restauranteActivo.tipo.map(t => <span key={t} className="card__tag">{t}</span>)}
-              </div>
-              <h2 className="modal__nombre">{restauranteActivo.nombre}</h2>
-              <p className="modal__rating">
-                {restauranteActivo.numValoraciones > 0
-                  ? `★ ${restauranteActivo.valoracion} · ${restauranteActivo.numValoraciones} valoraciones · `
-                  : 'Nuevo · '}
-                {restauranteActivo.barrio ? `${restauranteActivo.barrio}, ` : ''}{restauranteActivo.ciudad}
-              </p>
-              <p className="modal__gancho">"{restauranteActivo.porQueIr}"</p>
-              <p className="modal__descripcion">{restauranteActivo.descripcion}</p>
-              <div className="modal__info">
-                <div className="modal__info-item">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-                  <span>{restauranteActivo.direccion}</span>
-                </div>
-                <div className="modal__info-item">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span>{restauranteActivo.horario}</span>
-                </div>
-                <div className="modal__info-item">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M17 6.5A7 7 0 1 0 17 17.5"/><path d="M4 10h10"/><path d="M4 14h10"/></svg>
-                  <span>{restauranteActivo.precioMedio}€ p.p.</span>
-                </div>
-                <div className="modal__info-item">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restauranteActivo.nombre} ${restauranteActivo.direccion || restauranteActivo.ciudad}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: '#ff5c3a', fontWeight: 600, textDecoration: 'underline' }}
-                  >
-                    Ver en Google Maps
-                  </a>
-                </div>
-                <div className="modal__info-item">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  <button
-                    onClick={compartir}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', color: linkCopiado ? '#10b981' : '#ff5c3a', fontWeight: 600 }}
-                  >
-                    {linkCopiado ? '¡Enlace copiado!' : 'Compartir restaurante'}
-                  </button>
-                </div>
-              </div>
-
-              <ValoracionEstrellas
-                miValoracion={miValoracion}
-                onValorar={valorar}
-                usuario={usuario}
-                onLoginClick={() => setModalAuthAbierto(true)}
-              />
-            </div>
-          </div>
-        </div>
+        <RestauranteModal
+          restaurante={restauranteActivo}
+          favoritos={favoritos}
+          usuario={usuario}
+          esAdmin={esAdmin}
+          miValoracion={miValoracion}
+          linkCopiado={linkCopiado}
+          onCerrar={cerrarModal}
+          onCompartir={compartir}
+          onValorar={valorar}
+          onToggleFavorito={toggleFavorito}
+          onEditar={() => setEditandoRestaurante(true)}
+          onLoginClick={() => setModalAuthAbierto(true)}
+        />
       )}
       {comoFuncionaAbierto && (
         <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && setComoFuncionaAbierto(false)}>

@@ -50,8 +50,11 @@ function App() {
   const dragStartX = useRef(0);
   const scrollStartX = useRef(0);
 
+  const didDrag = useRef(false);
+
   function onScrollMouseDown(e) {
     isDragging.current = true;
+    didDrag.current = false;
     dragStartX.current = e.pageX;
     scrollStartX.current = scrollRef.current.scrollLeft;
     scrollRef.current.style.cursor = 'grabbing';
@@ -61,6 +64,7 @@ function App() {
   function onScrollMouseMove(e) {
     if (!isDragging.current) return;
     const dx = e.pageX - dragStartX.current;
+    if (Math.abs(dx) > 5) didDrag.current = true;
     scrollRef.current.scrollLeft = scrollStartX.current - dx;
   }
 
@@ -70,6 +74,10 @@ function App() {
       scrollRef.current.style.cursor = 'grab';
       scrollRef.current.style.userSelect = '';
     }
+  }
+
+  function onScrollClick(e) {
+    if (didDrag.current) e.stopPropagation();
   }
 
   const modalRef = useRef(null);
@@ -407,6 +415,7 @@ function App() {
               onMouseMove={onScrollMouseMove}
               onMouseUp={onScrollMouseUp}
               onMouseLeave={onScrollMouseUp}
+              onClickCapture={onScrollClick}
             >
                 {[...filtrados]
                   .sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn))

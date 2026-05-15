@@ -971,11 +971,52 @@ a {
   }
 
   .results {
-    padding: 24px 16px 80px;
+    padding: 24px 16px max(80px, env(safe-area-inset-bottom, 80px));
   }
 
   .cards-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .card__image {
+    height: 140px;
+  }
+
+  .card__body {
+    padding: 10px 12px 12px;
+  }
+
+  .card__name {
+    font-size: 0.85rem;
+  }
+
+  .card__tags {
+    margin-top: 6px;
+    gap: 4px;
+  }
+
+  .card__tag {
+    font-size: 0.68rem;
+    padding: 2px 6px;
+  }
+
+  .card__footer {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .card__location {
+    font-size: 0.72rem;
+  }
+
+  .card__price {
+    font-size: 0.75rem;
+  }
+
+  .search-bar__field input,
+  input, select, textarea {
+    font-size: 16px !important;
   }
 }
 

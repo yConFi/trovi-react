@@ -220,6 +220,7 @@ function App() {
   ).sort((a, b) => {
     if (orden === "valoracion") return (parseFloat(b.valoracion) || 0) - (parseFloat(a.valoracion) || 0);
     if (orden === "precio") return (a.precioMedio || 0) - (b.precioMedio || 0);
+    if (orden === "precio-desc") return (b.precioMedio || 0) - (a.precioMedio || 0);
     return 0;
   });
 

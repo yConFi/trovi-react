@@ -4,6 +4,7 @@ const opciones = [
   { value: "", label: "Por defecto" },
   { value: "valoracion", label: "Mejor valorados" },
   { value: "precio", label: "Precio: menor primero" },
+  { value: "precio-desc", label: "Precio: mayor primero" },
 ];
 
 function OrdenDropdown({ value, onChange }) {

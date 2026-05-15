@@ -20,6 +20,7 @@ function AuthModal({ onClose, onAuth }) {
   const [password, setPassword] = useState('');
   const [nombre, setNombre] = useState('');
   const [username, setUsername] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
   const [linkEnviado, setLinkEnviado] = useState(false);
@@ -59,6 +60,11 @@ function AuthModal({ onClose, onAuth }) {
     } else {
       if (password.length < 6) {
         setError('La contraseña debe tener al menos 6 caracteres.');
+        setCargando(false);
+        return;
+      }
+      if (password !== passwordConfirm) {
+        setError('Las contraseñas no coinciden.');
         setCargando(false);
         return;
       }
@@ -137,21 +143,33 @@ function AuthModal({ onClose, onAuth }) {
               )}
               <input
                 type="email"
-                placeholder="Email"
+                placeholder={modo === 'register' ? 'Email *' : 'Email'}
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
                 style={inputStyle}
               />
               {modo !== 'forgot' && (
-                <input
-                  type="password"
-                  placeholder="Contraseña"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                  style={inputStyle}
-                />
+                <>
+                  <input
+                    type="password"
+                    placeholder={modo === 'register' ? 'Contraseña *' : 'Contraseña'}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                    style={inputStyle}
+                  />
+                  {modo === 'register' && (
+                    <input
+                      type="password"
+                      placeholder="Repetir contraseña *"
+                      value={passwordConfirm}
+                      onChange={e => setPasswordConfirm(e.target.value)}
+                      required
+                      style={inputStyle}
+                    />
+                  )}
+                </>
               )}
               {error && (
                 <p style={{ color: '#ef4444', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>

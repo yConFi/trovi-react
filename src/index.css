@@ -121,9 +121,9 @@ a {
    HERO
 =========================== */
 .hero {
-  background: linear-gradient(160deg, #fff7f5 0%, #fafaf9 60%);
-  padding: 72px 0 56px;
-  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(160deg, #fff0ec 0%, #fff7f5 45%, #fafaf9 100%);
+  padding: 80px 0 64px;
+  border-bottom: 1px solid #f0e8e5;
 }
 
 .hero__inner {
@@ -616,13 +616,15 @@ a {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid #e5e7eb;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+  border-color: #d1d5db;
 }
 
 .card__image {

@@ -141,7 +141,7 @@ function RestauranteModal({ restaurante, favoritos, usuario, esAdmin, miValoraci
             </div>
             <div className="modal__info-item">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M17 6.5A7 7 0 1 0 17 17.5"/><path d="M4 10h10"/><path d="M4 14h10"/></svg>
-              <span>{restaurante.precioMedio}€ p.p.</span>
+              <span>{restaurante.precioMedio > 0 ? `${restaurante.precioMedio}€ p.p.` : '—'}</span>
             </div>
             <div className="modal__info-item">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>

@@ -18,7 +18,7 @@ function RestaurantCard({ restaurante, onClick, esFavorito, onToggleFavorito }) 
                 ★ {valoracion} <span style={{ color: '#9ca3af', fontWeight: 400 }}>({numValoraciones})</span>
               </div>
             ) : (
-              <span style={{ fontSize: '0.75rem', fontWeight: 500, color: '#9ca3af' }}>Sin valorar</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#10b981', background: '#d1fae5', padding: '3px 8px', borderRadius: 999 }}>Nuevo</span>
             )}
             <button
               onClick={e => { e.stopPropagation(); onToggleFavorito(); }}

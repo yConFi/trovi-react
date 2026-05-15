@@ -549,7 +549,7 @@ function App() {
               <p className="modal__rating">
                 {restauranteActivo.numValoraciones > 0
                   ? `★ ${restauranteActivo.valoracion} · ${restauranteActivo.numValoraciones} valoraciones · `
-                  : 'Sin valoraciones · '}
+                  : 'Nuevo · '}
                 {restauranteActivo.barrio ? `${restauranteActivo.barrio}, ` : ''}{restauranteActivo.ciudad}
               </p>
               <p className="modal__gancho">"{restauranteActivo.porQueIr}"</p>

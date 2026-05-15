@@ -359,8 +359,9 @@ a {
 
 .destacados {
   padding: 0;
-  border-bottom: 1px solid #e5e7eb;
-  background: white;
+  border-top: 1px solid #f3f0ed;
+  border-bottom: 1px solid #f3f0ed;
+  background: #fdf9f7;
 }
 
 .destacados__header {
@@ -370,7 +371,7 @@ a {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 14px 24px;
+  padding: 20px 24px 12px;
   margin-bottom: 0;
 }
 
@@ -378,8 +379,8 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   color: #111827;
   margin-bottom: 0;
   padding: 0;

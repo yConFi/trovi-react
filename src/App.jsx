@@ -345,22 +345,26 @@ function App() {
       {restaurantes.length > 0 && (
         <section className="destacados">
           <div className="container">
-            <button
-              className="destacados__header"
-              onClick={() => setDestacadosExpandido(v => !v)}
-            >
-              <h2 className="destacados__titulo">
-                <span className="destacados__pulse" />
-                Recién añadidos
-                <svg
-                  width="14" height="14" viewBox="0 0 24 24" fill="none"
-                  stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                  style={{ transform: destacadosExpandido ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease', flexShrink: 0 }}
-                >
-                  <polyline points="18 15 12 9 6 15"/>
-                </svg>
-              </h2>
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <button
+                className="destacados__header"
+                style={{ padding: '0 0 4px' }}
+                onClick={() => setDestacadosExpandido(v => !v)}
+              >
+                <h2 className="destacados__titulo">
+                  <span className="destacados__pulse" />
+                  Recién añadidos
+                  <svg
+                    width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ transform: destacadosExpandido ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease', flexShrink: 0 }}
+                  >
+                    <polyline points="18 15 12 9 6 15"/>
+                  </svg>
+                </h2>
+              </button>
+              <p style={{ fontSize: '0.82rem', color: '#9ca3af', margin: '0 0 16px', padding: '0' }}>Los últimos sitios en llegar a Trovi</p>
+            </div>
           </div>
           {destacadosExpandido && (
             <div className="destacados__scroll-wrap">

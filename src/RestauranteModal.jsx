@@ -7,13 +7,30 @@ function ModalCarrusel({ restaurante }) {
     ...(restaurante.fotoUrl && !(restaurante.fotosUrls ?? []).includes(restaurante.fotoUrl) ? [restaurante.fotoUrl] : []),
   ].filter(Boolean);
   const [idx, setIdx] = useState(0);
+  const touchStartX = useRef(0);
+
+  function onCarruselTouchStart(e) {
+    e.stopPropagation();
+    touchStartX.current = e.touches[0].clientX;
+  }
+
+  function onCarruselTouchMove(e) {
+    e.stopPropagation();
+  }
+
+  function onCarruselTouchEnd(e) {
+    e.stopPropagation();
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (delta < -50) setIdx(i => (i + 1) % fotos.length);
+    else if (delta > 50) setIdx(i => (i - 1 + fotos.length) % fotos.length);
+  }
 
   if (fotos.length === 0) {
     return <div className="modal__image">{restaurante.emoji}</div>;
   }
 
   return (
-    <div className="modal__image" style={{ position: 'relative' }}>
+    <div className="modal__image" style={{ position: 'relative' }} onTouchStart={onCarruselTouchStart} onTouchMove={onCarruselTouchMove} onTouchEnd={onCarruselTouchEnd}>
       <img
         src={fotos[idx]}
         alt={restaurante.nombre}

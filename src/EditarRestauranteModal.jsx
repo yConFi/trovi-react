@@ -42,6 +42,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [estadoFoto, setEstadoFoto] = useState(null);
   const [subiendoFotoAdicional, setSubiendoFotoAdicional] = useState(false);
+  const [errorFotoAdicional, setErrorFotoAdicional] = useState(false);
 
   function set(field, value) {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -69,12 +70,15 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
     const file = e.target.files[0];
     if (!file) return;
     setSubiendoFotoAdicional(true);
+    setErrorFotoAdicional(false);
     const ext = file.name.split('.').pop();
     const path = `${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from('restaurantes').upload(path, file);
     if (!error) {
       const { data } = supabase.storage.from('restaurantes').getPublicUrl(path);
       set('fotosUrls', [...form.fotosUrls, data.publicUrl]);
+    } else {
+      setErrorFotoAdicional(true);
     }
     setSubiendoFotoAdicional(false);
     e.target.value = '';
@@ -82,6 +86,12 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
 
   function eliminarFotoAdicional(url) {
     set('fotosUrls', form.fotosUrls.filter(u => u !== url));
+  }
+
+  function promoverAFotoPrincipal(url) {
+    const nuevasFotos = form.fotosUrls.filter(u => u !== url);
+    if (form.fotoUrl && !nuevasFotos.includes(form.fotoUrl)) nuevasFotos.push(form.fotoUrl);
+    setForm(prev => ({ ...prev, fotoUrl: url, fotosUrls: nuevasFotos }));
   }
 
   async function handleGuardar() {
@@ -202,6 +212,11 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
                       <div key={url} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', aspectRatio: '1' }}>
                         <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <button
+                          onClick={() => promoverAFotoPrincipal(url)}
+                          title="Hacer foto principal"
+                          style={{ position: 'absolute', top: 4, left: 4, width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,92,58,0.85)', border: 'none', cursor: 'pointer', color: 'white', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >★</button>
+                        <button
                           onClick={() => eliminarFotoAdicional(url)}
                           style={{ position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer', color: 'white', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >✕</button>
@@ -213,6 +228,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
                   {subiendoFotoAdicional ? 'Subiendo…' : '+ Añadir foto'}
                   <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleSubirFotoAdicional} disabled={subiendoFotoAdicional} />
                 </label>
+                {errorFotoAdicional && <p style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600, marginTop: 6 }}>✕ Error al subir la foto.</p>}
               </div>
             </div>
             <div>

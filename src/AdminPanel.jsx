@@ -33,12 +33,13 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
     precioMedio: '',
     emoji: '🍽️',
     fotoUrl: '',
-    fotosUrls: [],
+    fotosUrls: propuesta.fotos_urls ?? [],
   });
   const [publicando, setPublicando] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [estadoFoto, setEstadoFoto] = useState(null);
   const [subiendoFotoAdicional, setSubiendoFotoAdicional] = useState(false);
+  const [errorFotoAdicional, setErrorFotoAdicional] = useState(false);
   const [detallesAbiertos, setDetallesAbiertos] = useState(!!propuesta.nombre);
 
   function set(field, value) {
@@ -67,12 +68,15 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
     const file = e.target.files[0];
     if (!file) return;
     setSubiendoFotoAdicional(true);
+    setErrorFotoAdicional(false);
     const ext = file.name.split('.').pop();
     const path = `${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from('restaurantes').upload(path, file);
     if (!error) {
       const { data } = supabase.storage.from('restaurantes').getPublicUrl(path);
       set('fotosUrls', [...form.fotosUrls, data.publicUrl]);
+    } else {
+      setErrorFotoAdicional(true);
     }
     setSubiendoFotoAdicional(false);
     e.target.value = '';
@@ -80,6 +84,12 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
 
   function eliminarFotoAdicional(url) {
     set('fotosUrls', form.fotosUrls.filter(u => u !== url));
+  }
+
+  function promoverAFotoPrincipal(url) {
+    const nuevasFotos = form.fotosUrls.filter(u => u !== url);
+    if (form.fotoUrl && !nuevasFotos.includes(form.fotoUrl)) nuevasFotos.push(form.fotoUrl);
+    setForm(prev => ({ ...prev, fotoUrl: url, fotosUrls: nuevasFotos }));
   }
 
   async function handlePublicar() {
@@ -156,23 +166,6 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
             <label style={labelStyle}>Descripción</label>
             <textarea style={{ ...inputStyle, resize: 'vertical' }} rows={3} value={form.descripcion} onChange={e => set('descripcion', e.target.value)} />
           </div>
-          {propuesta.fotos_urls?.length > 0 && (
-            <div>
-              <label style={labelStyle}>Fotos del usuario — haz clic para usar como principal</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-                {propuesta.fotos_urls.map(url => (
-                  <div key={url} onClick={() => set('fotoUrl', url)} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', aspectRatio: '1', cursor: 'pointer', outline: form.fotoUrl === url ? '2.5px solid #ff5c3a' : '2.5px solid transparent' }}>
-                    <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    {form.fotoUrl === url && (
-                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,92,58,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
           <div>
             <label style={labelStyle}>Foto principal (fachada)</label>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -197,6 +190,11 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
                   <div key={url} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', aspectRatio: '1' }}>
                     <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <button
+                      onClick={() => promoverAFotoPrincipal(url)}
+                      title="Hacer foto principal"
+                      style={{ position: 'absolute', top: 4, left: 4, width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,92,58,0.85)', border: 'none', cursor: 'pointer', color: 'white', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >★</button>
+                    <button
                       onClick={() => eliminarFotoAdicional(url)}
                       style={{ position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer', color: 'white', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >✕</button>
@@ -208,6 +206,7 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
               {subiendoFotoAdicional ? 'Subiendo…' : '+ Añadir foto'}
               <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleSubirFotoAdicional} disabled={subiendoFotoAdicional} />
             </label>
+            {errorFotoAdicional && <p style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600, marginTop: 6 }}>✕ Error al subir la foto.</p>}
           </div>
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none' }}>
             <div onClick={() => set('destacado', !form.destacado)} style={{ width: 40, height: 22, borderRadius: 999, cursor: 'pointer', background: form.destacado ? '#ff5c3a' : '#e5e7eb', position: 'relative', transition: 'background 0.2s ease', flexShrink: 0 }}>

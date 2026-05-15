@@ -219,7 +219,7 @@ function App() {
     : filtradosSinBarrio
   ).sort((a, b) => {
     if (orden === "valoracion") return (parseFloat(b.valoracion) || 0) - (parseFloat(a.valoracion) || 0);
-    if (orden === "nuevos") return new Date(b.creadoEn) - new Date(a.creadoEn);
+    if (orden === "precio") return (a.precioMedio || 0) - (b.precioMedio || 0);
     return 0;
   });
 

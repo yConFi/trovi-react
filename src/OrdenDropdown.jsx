@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 const opciones = [
   { value: "", label: "Por defecto" },
   { value: "valoracion", label: "Mejor valorados" },
-  { value: "nuevos", label: "Más recientes" },
+  { value: "precio", label: "Precio: menor primero" },
 ];
 
 function OrdenDropdown({ value, onChange }) {

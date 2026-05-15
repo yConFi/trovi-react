@@ -6,7 +6,7 @@ function RestaurantCard({ restaurante, onClick, esFavorito, onToggleFavorito }) 
     <article className="card" onClick={onClick}>
       <div className="card__image">
         {fotoUrl
-          ? <img src={fotoUrl} alt={nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ? <img src={fotoUrl} alt={nombre} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : emoji}
       </div>
       <div className="card__body">

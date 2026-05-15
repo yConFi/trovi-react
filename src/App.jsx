@@ -43,6 +43,7 @@ function App() {
   const [comoFuncionaAbierto, setComoFuncionaAbierto] = useState(false);
   const [linkCopiado, setLinkCopiado] = useState(false);
   const [destacadosExpandido, setDestacadosExpandido] = useState(true);
+  const [mostrados, setMostrados] = useState(24);
 
   const comoFuncionaSwipe = useSwipeClose(() => setComoFuncionaAbierto(false));
   const scrollRef = useRef(null);
@@ -181,7 +182,7 @@ function App() {
 
   useEffect(() => {
     async function cargarRestaurantes() {
-      const { data, error } = await supabase.from('restaurantes').select('*');
+      const { data, error } = await supabase.from('restaurantes').select('*').order('created_at', { ascending: false }).limit(200);
       if (error) {
         console.error('Error cargando restaurantes:', error);
       } else {
@@ -222,6 +223,10 @@ function App() {
     return 0;
   });
 
+  useEffect(() => {
+    setMostrados(24);
+  }, [ciudadDebounced, tipoDebounced, precio, chipsActivos, barrioActivo, orden]);
+
   function limpiar() {
     setCiudad("");
     setTipo("");
@@ -231,6 +236,7 @@ function App() {
     setChipsActivos([]);
     setOrden("");
     setBarrioActivo("");
+    setMostrados(24);
   }
 
   const hayFiltros = ciudad !== "" || tipo !== "" || precio !== "" || chipsActivos.length > 0 || barrioActivo !== "";
@@ -428,17 +434,26 @@ function App() {
             )}
           </div>
         ) : (
-          <div className="cards-grid">
-            {filtrados.map(r => (
-              <RestaurantCard
-                key={r.id}
-                restaurante={r}
-                esFavorito={favoritos.includes(r.id)}
-                onToggleFavorito={() => toggleFavorito(r.id)}
-                onClick={() => abrirModal(r)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="cards-grid">
+              {filtrados.slice(0, mostrados).map(r => (
+                <RestaurantCard
+                  key={r.id}
+                  restaurante={r}
+                  esFavorito={favoritos.includes(r.id)}
+                  onToggleFavorito={() => toggleFavorito(r.id)}
+                  onClick={() => abrirModal(r)}
+                />
+              ))}
+            </div>
+            {filtrados.length > mostrados && (
+              <div style={{ textAlign: 'center', marginTop: 32 }}>
+                <button className="btn btn--outline" onClick={() => setMostrados(m => m + 24)}>
+                  Mostrar {Math.min(24, filtrados.length - mostrados)} más
+                </button>
+              </div>
+            )}
+          </>
         )}
       </main>
 

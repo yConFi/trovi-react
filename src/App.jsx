@@ -35,7 +35,7 @@ function App() {
   const [ciudadDebounced, setCiudadDebounced] = useState("");
   const [tipoDebounced, setTipoDebounced] = useState("");
   const [precio, setPrecio] = useState("");
-  const [chipActivo, setChipActivo] = useState("Todo");
+  const [chipsActivos, setChipsActivos] = useState([]);
   const [barrioActivo, setBarrioActivo] = useState("");
   const [restauranteActivo, setRestauranteActivo] = useState(null);
   const [editandoRestaurante, setEditandoRestaurante] = useState(false);
@@ -251,13 +251,13 @@ function App() {
     cargarRestaurantes();
   }, []);
 
-  const chips = ['Todo', ...[...new Set(restaurantes.flatMap(r => r.tipo))].sort()];
+  const chips = [...new Set(restaurantes.flatMap(r => r.tipo))].sort();
 
   const filtradosSinBarrio = restaurantes.filter(r => {
     const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase());
     const coincideTipo = tipoDebounced === "" || r.tipo.some(t => t.toLowerCase().includes(tipoDebounced.toLowerCase()));
     const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
-    const coincideChip = chipActivo === "Todo" || r.tipo.includes(chipActivo);
+    const coincideChip = chipsActivos.length === 0 || r.tipo.some(t => chipsActivos.includes(t));
     return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;
   });
 
@@ -280,12 +280,12 @@ function App() {
     setCiudadDebounced("");
     setTipoDebounced("");
     setPrecio("");
-    setChipActivo("Todo");
+    setChipsActivos([]);
     setOrden("");
     setBarrioActivo("");
   }
 
-  const hayFiltros = ciudad !== "" || tipo !== "" || precio !== "" || chipActivo !== "Todo" || barrioActivo !== "";
+  const hayFiltros = ciudad !== "" || tipo !== "" || precio !== "" || chipsActivos.length > 0 || barrioActivo !== "";
 
   return (
     <div>
@@ -351,8 +351,10 @@ function App() {
           {chips.map(chip => (
             <button
               key={chip}
-              className={`filter-chip${chipActivo === chip ? ' filter-chip--active' : ''}`}
-              onClick={() => setChipActivo(chip)}
+              className={`filter-chip${chipsActivos.includes(chip) ? ' filter-chip--active' : ''}`}
+              onClick={() => setChipsActivos(prev =>
+                prev.includes(chip) ? prev.filter(c => c !== chip) : [...prev, chip]
+              )}
             >
               {chip}
             </button>

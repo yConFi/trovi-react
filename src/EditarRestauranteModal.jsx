@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from './supabase';
 import { useSwipeClose } from './useSwipeClose';
+import CropperModal from './CropperModal';
 
 const inputStyle = {
   padding: '10px 14px',
@@ -41,6 +42,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [estadoFoto, setEstadoFoto] = useState(null);
+  const [cropperSrc, setCropperSrc] = useState(null);
   const [subiendoFotoAdicional, setSubiendoFotoAdicional] = useState(false);
   const [errorFotoAdicional, setErrorFotoAdicional] = useState(false);
 
@@ -48,14 +50,21 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
     setForm(prev => ({ ...prev, [field]: value }));
   }
 
-  async function handleSubirFoto(e) {
+  function handleSubirFoto(e) {
     const file = e.target.files[0];
     if (!file) return;
+    setCropperSrc(URL.createObjectURL(file));
+    e.target.value = '';
+  }
+
+  async function handleCropConfirm(blob) {
+    const src = cropperSrc;
+    setCropperSrc(null);
+    URL.revokeObjectURL(src);
     setSubiendoFoto(true);
     setEstadoFoto(null);
-    const ext = file.name.split('.').pop();
-    const path = `${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('restaurantes').upload(path, file);
+    const path = `${Date.now()}.jpg`;
+    const { error } = await supabase.storage.from('restaurantes').upload(path, blob, { contentType: 'image/jpeg' });
     if (!error) {
       const { data } = supabase.storage.from('restaurantes').getPublicUrl(path);
       set('fotoUrl', data.publicUrl);
@@ -138,6 +147,7 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
   }
 
   return (
+    <>
     <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && onCerrar()}>
       <div className="modal" style={{ maxWidth: 580 }} ref={ref} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         <button className="modal__close" onClick={onCerrar}>✕</button>
@@ -295,6 +305,14 @@ function EditarRestauranteModal({ restaurante, onGuardar, onEliminar, onCerrar }
         </div>
       </div>
     </div>
+    {cropperSrc && (
+      <CropperModal
+        imageSrc={cropperSrc}
+        onConfirm={handleCropConfirm}
+        onCancelar={() => { URL.revokeObjectURL(cropperSrc); setCropperSrc(null); }}
+      />
+    )}
+    </>
   );
 }
 

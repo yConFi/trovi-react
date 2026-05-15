@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './supabase';
+import CropperModal from './CropperModal';
 
 const inputStyle = {
   padding: '10px 14px',
@@ -38,6 +39,7 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
   const [publicando, setPublicando] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [estadoFoto, setEstadoFoto] = useState(null);
+  const [cropperSrc, setCropperSrc] = useState(null);
   const [subiendoFotoAdicional, setSubiendoFotoAdicional] = useState(false);
   const [errorFotoAdicional, setErrorFotoAdicional] = useState(false);
   const [detallesAbiertos, setDetallesAbiertos] = useState(!!propuesta.nombre);
@@ -46,14 +48,21 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
     setForm(prev => ({ ...prev, [field]: value }));
   }
 
-  async function handleSubirFoto(e) {
+  function handleSubirFoto(e) {
     const file = e.target.files[0];
     if (!file) return;
+    setCropperSrc(URL.createObjectURL(file));
+    e.target.value = '';
+  }
+
+  async function handleCropConfirm(blob) {
+    const src = cropperSrc;
+    setCropperSrc(null);
+    URL.revokeObjectURL(src);
     setSubiendoFoto(true);
     setEstadoFoto(null);
-    const ext = file.name.split('.').pop();
-    const path = `${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('restaurantes').upload(path, file);
+    const path = `${Date.now()}.jpg`;
+    const { error } = await supabase.storage.from('restaurantes').upload(path, blob, { contentType: 'image/jpeg' });
     if (!error) {
       const { data } = supabase.storage.from('restaurantes').getPublicUrl(path);
       set('fotoUrl', data.publicUrl);
@@ -225,6 +234,13 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
           Cancelar
         </button>
       </div>
+      {cropperSrc && (
+        <CropperModal
+          imageSrc={cropperSrc}
+          onConfirm={handleCropConfirm}
+          onCancelar={() => { URL.revokeObjectURL(cropperSrc); setCropperSrc(null); }}
+        />
+      )}
     </div>
   );
 }

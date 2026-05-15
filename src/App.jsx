@@ -257,7 +257,7 @@ function App() {
     const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase());
     const coincideTipo = tipoDebounced === "" || r.tipo.some(t => t.toLowerCase().includes(tipoDebounced.toLowerCase()));
     const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
-    const coincideChip = chipsActivos.length === 0 || r.tipo.some(t => chipsActivos.includes(t));
+    const coincideChip = chipsActivos.length === 0 || chipsActivos.every(chip => r.tipo.includes(chip));
     return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;
   });
 

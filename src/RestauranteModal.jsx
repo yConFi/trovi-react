@@ -146,12 +146,16 @@ function RestauranteModal({ restaurante, favoritos, usuario, esAdmin, miValoraci
             <div className="modal__info-item">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restaurante.nombre} ${restaurante.direccion || restaurante.ciudad}`)}`}
+                href={(() => {
+                  const query = encodeURIComponent([restaurante.nombre, restaurante.direccion, restaurante.barrio, restaurante.ciudad].filter(Boolean).join(', '));
+                  const esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                  return esMobil ? `geo:0,0?q=${query}` : `https://www.google.com/maps/search/?api=1&query=${query}`;
+                })()}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#ff5c3a', fontWeight: 600, textDecoration: 'underline' }}
               >
-                Ver en Google Maps
+                Cómo llegar
               </a>
             </div>
             <div className="modal__info-item">

@@ -54,6 +54,7 @@ function App() {
   const didDrag = useRef(false);
 
   function onScrollMouseDown(e) {
+    e.preventDefault();
     isDragging.current = true;
     didDrag.current = false;
     dragStartX.current = e.pageX;
@@ -203,7 +204,7 @@ function App() {
   const chips = [...new Set(restaurantes.flatMap(r => r.tipo))].sort();
 
   const filtradosSinBarrio = restaurantes.filter(r => {
-    const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase());
+    const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.nombre.toLowerCase().includes(ciudadDebounced.toLowerCase());
     const coincideTipo = tipoDebounced === "" || r.tipo.some(t => t.toLowerCase().includes(tipoDebounced.toLowerCase()));
     const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
     const coincideChip = chipsActivos.length === 0 || chipsActivos.some(chip => r.tipo.includes(chip));

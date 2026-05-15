@@ -22,7 +22,6 @@ const labelStyle = {
 
 function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBoton = '✓ Publicar restaurante' }) {
   const [form, setForm] = useState({
-    destacado: false,
     nombre: propuesta.nombre ?? '',
     ciudad: propuesta.ciudad ?? '',
     barrio: propuesta.barrio ?? '',
@@ -217,12 +216,6 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
             </label>
             {errorFotoAdicional && <p style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600, marginTop: 6 }}>✕ Error al subir la foto.</p>}
           </div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none' }}>
-            <div onClick={() => set('destacado', !form.destacado)} style={{ width: 40, height: 22, borderRadius: 999, cursor: 'pointer', background: form.destacado ? '#ff5c3a' : '#e5e7eb', position: 'relative', transition: 'background 0.2s ease', flexShrink: 0 }}>
-              <div style={{ position: 'absolute', top: 3, left: form.destacado ? 21 : 3, width: 16, height: 16, borderRadius: '50%', background: 'white', transition: 'left 0.2s ease', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
-            </div>
-            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#374151' }}>Marcar como destacado</span>
-          </label>
         </div>
       )}
 
@@ -287,7 +280,6 @@ function AdminPanel({ onClose, onPublicado }) {
       precio: 2,
       foto_url: form.fotoUrl || null,
       fotos_urls: form.fotosUrls ?? [],
-      destacado: form.destacado ?? false,
     });
     if (onPublicado) onPublicado();
   }

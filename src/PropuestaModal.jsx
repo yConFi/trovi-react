@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { supabase } from './supabase';
+import { useSwipeClose } from './useSwipeClose';
 
 function PropuestaModal({ usuario, onClose }) {
   const [nombre, setNombre] = useState('');
@@ -68,32 +69,7 @@ function PropuestaModal({ usuario, onClose }) {
     setCargando(false);
   }
 
-  const modalRef = useRef(null);
-  const touchStartY = useRef(0);
-  const dragOffset = useRef(0);
-
-  function onTouchStart(e) {
-    touchStartY.current = e.touches[0].clientY;
-  }
-
-  function onTouchMove(e) {
-    const delta = e.touches[0].clientY - touchStartY.current;
-    if (delta > 0 && modalRef.current?.scrollTop === 0) {
-      dragOffset.current = delta;
-      modalRef.current.style.transform = `translateY(${delta}px)`;
-      modalRef.current.style.transition = 'none';
-    }
-  }
-
-  function onTouchEnd() {
-    if (dragOffset.current > window.innerHeight * 0.5) {
-      onClose();
-    } else if (modalRef.current) {
-      modalRef.current.style.transform = '';
-      modalRef.current.style.transition = 'transform 0.3s ease';
-    }
-    dragOffset.current = 0;
-  }
+  const { ref, onTouchStart, onTouchMove, onTouchEnd } = useSwipeClose(onClose);
 
   const inputStyle = {
     padding: '12px 16px',
@@ -107,7 +83,7 @@ function PropuestaModal({ usuario, onClose }) {
 
   return (
     <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal" style={{ maxWidth: 480 }} ref={modalRef} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+      <div className="modal" style={{ maxWidth: 480 }} ref={ref} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         <button className="modal__close" onClick={onClose}>✕</button>
         <div className="modal__body" style={{ paddingTop: 40 }}>
           {enviado ? (

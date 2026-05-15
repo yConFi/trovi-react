@@ -3,8 +3,8 @@ import ValoracionEstrellas from './ValoracionEstrellas';
 
 function ModalCarrusel({ restaurante }) {
   const fotos = [
-    ...(restaurante.fotosUrls ?? []),
-    ...(restaurante.fotoUrl && !(restaurante.fotosUrls ?? []).includes(restaurante.fotoUrl) ? [restaurante.fotoUrl] : []),
+    ...(restaurante.fotoUrl ? [restaurante.fotoUrl] : []),
+    ...(restaurante.fotosUrls ?? []).filter(u => u !== restaurante.fotoUrl),
   ].filter(Boolean);
   const [idx, setIdx] = useState(0);
   const touchStartX = useRef(0);

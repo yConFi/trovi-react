@@ -18,6 +18,7 @@ function AuthModal({ onClose, onAuth }) {
   const [modo, setModo] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [nombre, setNombre] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
   const [linkEnviado, setLinkEnviado] = useState(false);
@@ -60,7 +61,11 @@ function AuthModal({ onClose, onAuth }) {
         setCargando(false);
         return;
       }
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { nombre: nombre.trim() || email.split('@')[0] } },
+      });
       if (error) {
         setError('No se pudo crear la cuenta. Prueba con otro email.');
       } else {
@@ -103,6 +108,16 @@ function AuthModal({ onClose, onAuth }) {
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {modo === 'register' && (
+                <input
+                  type="text"
+                  placeholder="Tu nombre"
+                  value={nombre}
+                  onChange={e => setNombre(e.target.value)}
+                  required
+                  style={inputStyle}
+                />
+              )}
               <input
                 type="email"
                 placeholder="Email"

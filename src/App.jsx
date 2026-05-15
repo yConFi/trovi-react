@@ -45,6 +45,33 @@ function App() {
   const [destacadosExpandido, setDestacadosExpandido] = useState(true);
 
   const comoFuncionaSwipe = useSwipeClose(() => setComoFuncionaAbierto(false));
+  const scrollRef = useRef(null);
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const scrollStartX = useRef(0);
+
+  function onScrollMouseDown(e) {
+    isDragging.current = true;
+    dragStartX.current = e.pageX;
+    scrollStartX.current = scrollRef.current.scrollLeft;
+    scrollRef.current.style.cursor = 'grabbing';
+    scrollRef.current.style.userSelect = 'none';
+  }
+
+  function onScrollMouseMove(e) {
+    if (!isDragging.current) return;
+    const dx = e.pageX - dragStartX.current;
+    scrollRef.current.scrollLeft = scrollStartX.current - dx;
+  }
+
+  function onScrollMouseUp() {
+    isDragging.current = false;
+    if (scrollRef.current) {
+      scrollRef.current.style.cursor = 'grab';
+      scrollRef.current.style.userSelect = '';
+    }
+  }
+
   const modalRef = useRef(null);
   const touchStartY = useRef(0);
   const dragOffset = useRef(0);
@@ -372,7 +399,15 @@ function App() {
           </div>
           {destacadosExpandido && (
             <div className="destacados__scroll-wrap">
-              <div className="destacados__scroll">
+              <div
+              className="destacados__scroll"
+              ref={scrollRef}
+              style={{ cursor: 'grab' }}
+              onMouseDown={onScrollMouseDown}
+              onMouseMove={onScrollMouseMove}
+              onMouseUp={onScrollMouseUp}
+              onMouseLeave={onScrollMouseUp}
+            >
                 {[...filtrados]
                   .sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn))
                   .slice(0, 8)

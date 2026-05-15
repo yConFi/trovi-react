@@ -137,12 +137,22 @@ function App() {
     window.history.replaceState(null, '', '/');
   }
 
-  function compartir() {
+  async function compartir() {
     const url = `${window.location.origin}/r/${restauranteActivo.id}`;
-    navigator.clipboard.writeText(url).then(() => {
-      setLinkCopiado(true);
-      setTimeout(() => setLinkCopiado(false), 2500);
-    });
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: restauranteActivo.nombre,
+          text: restauranteActivo.porQueIr ?? `Descubre ${restauranteActivo.nombre} en Trovi`,
+          url,
+        });
+      } catch (_) {}
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        setLinkCopiado(true);
+        setTimeout(() => setLinkCopiado(false), 2500);
+      });
+    }
   }
 
   async function valorar(puntuacion) {

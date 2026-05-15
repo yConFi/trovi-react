@@ -262,7 +262,7 @@ function AdminPanel({ onClose, onPublicado }) {
     }
   }
 
-  async function insertarRestaurante(form) {
+  async function insertarRestaurante(form, propuestoPor = null) {
     const tipoArray = form.tipo ? form.tipo.split(',').map(t => t.trim()).filter(Boolean) : ['Restaurante'];
     await supabase.from('restaurantes').insert({
       nombre: form.nombre,
@@ -280,12 +280,13 @@ function AdminPanel({ onClose, onPublicado }) {
       precio: 2,
       foto_url: form.fotoUrl || null,
       fotos_urls: form.fotosUrls ?? [],
+      propuesto_por: propuestoPor ?? null,
     });
     if (onPublicado) onPublicado();
   }
 
   async function aprobar(propuesta, form) {
-    await insertarRestaurante(form);
+    await insertarRestaurante(form, propuesta.user_username ?? null);
     await supabase.from('propuestas').update({ estado: 'aprobado' }).eq('id', propuesta.id);
     if (propuesta.user_email) await notificar(propuesta.user_email, form.nombre, 'aprobado');
     setPropuestas(prev => prev.filter(p => p.id !== propuesta.id));

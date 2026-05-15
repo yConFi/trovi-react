@@ -37,11 +37,13 @@ function Avatar({ nombre, email, size = 64 }) {
 
 function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerRestaurante }) {
   const nombreActual = usuario.user_metadata?.nombre ?? '';
+  const usernameActual = usuario.user_metadata?.username ?? '';
   const [propuestas, setPropuestas] = useState([]);
   const [restaurantesFav, setRestaurantesFav] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [nuevoNombre, setNuevoNombre] = useState(nombreActual);
+  const [nuevoUsername, setNuevoUsername] = useState(usernameActual);
   const [guardandoPerfil, setGuardandoPerfil] = useState(false);
   const [errorPerfil, setErrorPerfil] = useState('');
   const [passwordLinkEnviado, setPasswordLinkEnviado] = useState(false);
@@ -73,10 +75,13 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
   }, [usuario.id]);
 
   async function guardarPerfil() {
-    if (!nuevoNombre.trim()) { setErrorPerfil('El nombre no puede estar vacío.'); return; }
+    const usernameClean = nuevoUsername.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+    if (!usernameClean) { setErrorPerfil('El nombre de usuario no puede estar vacío.'); return; }
     setGuardandoPerfil(true);
     setErrorPerfil('');
-    const { error } = await supabase.auth.updateUser({ data: { nombre: nuevoNombre.trim() } });
+    const { error } = await supabase.auth.updateUser({
+      data: { nombre: nuevoNombre.trim() || null, username: usernameClean },
+    });
     if (error) {
       setErrorPerfil('No se pudo guardar. Inténtalo de nuevo.');
     } else {
@@ -106,6 +111,7 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
             <Avatar nombre={nombreActual} email={usuario.email} size={60} />
             <div>
+              {usernameActual && <p style={{ fontSize: '0.85rem', color: '#ff5c3a', fontWeight: 600, marginBottom: 2 }}>@{usernameActual}</p>}
               <p style={{ fontWeight: 700, fontSize: '1.1rem', color: '#111827' }}>{nombreActual || usuario.email.split('@')[0]}</p>
               <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: 2 }}>{usuario.email}</p>
             </div>
@@ -131,10 +137,17 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <input
                 style={inputStyle}
+                value={nuevoUsername}
+                onChange={e => setNuevoUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                placeholder="Nombre de usuario *"
+                maxLength={20}
+                autoFocus
+              />
+              <input
+                style={inputStyle}
                 value={nuevoNombre}
                 onChange={e => setNuevoNombre(e.target.value)}
-                placeholder="Tu nombre"
-                autoFocus
+                placeholder="Nombre completo (opcional)"
               />
               {errorPerfil && <p style={{ fontSize: '0.85rem', color: '#ef4444' }}>{errorPerfil}</p>}
               <div style={{ display: 'flex', gap: 8 }}>

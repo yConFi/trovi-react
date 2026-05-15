@@ -19,6 +19,7 @@ function AuthModal({ onClose, onAuth }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nombre, setNombre] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
   const [linkEnviado, setLinkEnviado] = useState(false);
@@ -61,10 +62,16 @@ function AuthModal({ onClose, onAuth }) {
         setCargando(false);
         return;
       }
+      const usernameClean = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+      if (!usernameClean) {
+        setError('El nombre de usuario no puede estar vacío.');
+        setCargando(false);
+        return;
+      }
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { nombre: nombre.trim() || email.split('@')[0] } },
+        options: { data: { nombre: nombre.trim() || null, username: usernameClean } },
       });
       if (error) {
         setError('No se pudo crear la cuenta. Prueba con otro email.');
@@ -109,14 +116,24 @@ function AuthModal({ onClose, onAuth }) {
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {modo === 'register' && (
-                <input
-                  type="text"
-                  placeholder="Tu nombre"
-                  value={nombre}
-                  onChange={e => setNombre(e.target.value)}
-                  required
-                  style={inputStyle}
-                />
+                <>
+                  <input
+                    type="text"
+                    placeholder="Nombre de usuario * (ej: juangarcia)"
+                    value={username}
+                    onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                    required
+                    maxLength={20}
+                    style={inputStyle}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Tu nombre (opcional)"
+                    value={nombre}
+                    onChange={e => setNombre(e.target.value)}
+                    style={inputStyle}
+                  />
+                </>
               )}
               <input
                 type="email"

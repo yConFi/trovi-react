@@ -1,5 +1,5 @@
 function RestaurantCard({ restaurante, onClick, esFavorito, onToggleFavorito }) {
-  const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio, precioMedio, fotoUrl } = restaurante;
+  const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio, precioMedio, fotoUrl, propuestoPor } = restaurante;
 
 
   return (
@@ -34,6 +34,9 @@ function RestaurantCard({ restaurante, onClick, esFavorito, onToggleFavorito }) 
           {tipo.map(t => <span key={t} className="card__tag">{t}</span>)}
         </div>
         <div className="card__footer">
+          {propuestoPor && (
+            <span style={{ fontSize: '0.72rem', color: '#ff5c3a', fontWeight: 500 }}>@{propuestoPor}</span>
+          )}
           <span className="card__location">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
             {barrio ? `${barrio}, ` : ''}{ciudad}

@@ -53,6 +53,7 @@ function PropuestaModal({ usuario, onClose }) {
       fotos_urls: fotosUrls,
       user_id: usuario.id,
       user_email: usuario.email,
+      user_username: usuario.user_metadata?.username ?? null,
     });
 
     if (error) {

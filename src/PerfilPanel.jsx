@@ -75,7 +75,7 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
   }, [usuario.id]);
 
   async function guardarPerfil() {
-    const usernameClean = nuevoUsername.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const usernameClean = nuevoUsername.trim().replace(/[^a-zA-Z0-9_]/g, '');
     if (!usernameClean) { setErrorPerfil('El nombre de usuario no puede estar vacío.'); return; }
     setGuardandoPerfil(true);
     setErrorPerfil('');
@@ -138,7 +138,7 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
               <input
                 style={inputStyle}
                 value={nuevoUsername}
-                onChange={e => setNuevoUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                onChange={e => setNuevoUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
                 placeholder="Nombre de usuario *"
                 maxLength={20}
                 autoFocus

@@ -68,7 +68,7 @@ function AuthModal({ onClose, onAuth }) {
         setCargando(false);
         return;
       }
-      const usernameClean = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const usernameClean = username.trim().replace(/[^a-zA-Z0-9_]/g, '');
       if (!usernameClean) {
         setError('El nombre de usuario no puede estar vacío.');
         setCargando(false);
@@ -127,7 +127,7 @@ function AuthModal({ onClose, onAuth }) {
                     type="text"
                     placeholder="Nombre de usuario * (ej: juangarcia)"
                     value={username}
-                    onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                    onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
                     required
                     maxLength={20}
                     style={inputStyle}

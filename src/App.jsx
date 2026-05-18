@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { Analytics } from '@vercel/analytics/react';
-import MapaView from './MapaView';
 import Header from './Header';
 import RestaurantCard from './RestaurantCard';
 import PrecioDropdown from './PrecioDropdown';
@@ -46,7 +45,6 @@ function App() {
   const [linkCopiado, setLinkCopiado] = useState(false);
   const [destacadosExpandido, setDestacadosExpandido] = useState(true);
   const [mostrados, setMostrados] = useState(24);
-  const [vista, setVista] = useState('grid');
 
   const comoFuncionaSwipe = useSwipeClose(() => setComoFuncionaAbierto(false));
   const scrollRef = useRef(null);
@@ -415,23 +413,7 @@ function App() {
             <p style={{ fontSize: '0.9rem', color: '#6b7280' }}>
               <span style={{ fontWeight: 600, color: '#111827' }}>{filtrados.length}</span> {filtrados.length === 1 ? 'sitio encontrado' : 'sitios encontrados'}
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ display: 'flex', background: '#f3f4f6', borderRadius: 10, padding: 3, gap: 2 }}>
-                <button
-                  onClick={() => setVista('grid')}
-                  style={{ background: vista === 'grid' ? 'white' : 'transparent', border: 'none', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', boxShadow: vista === 'grid' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.15s' }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={vista === 'grid' ? '#111827' : '#9ca3af'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                </button>
-                <button
-                  onClick={() => setVista('mapa')}
-                  style={{ background: vista === 'mapa' ? 'white' : 'transparent', border: 'none', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', boxShadow: vista === 'mapa' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.15s' }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={vista === 'mapa' ? '#111827' : '#9ca3af'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-                </button>
-              </div>
-              {vista === 'grid' && <OrdenDropdown value={orden} onChange={setOrden} />}
-            </div>
+            <OrdenDropdown value={orden} onChange={setOrden} />
           </div>
         )}
         {cargando ? (
@@ -468,29 +450,23 @@ function App() {
           </div>
         ) : (
           <>
-            {vista === 'mapa' ? (
-              <MapaView restaurantes={filtrados} onAbrirModal={abrirModal} />
-            ) : (
-              <>
-                <div className="cards-grid">
-                  {filtrados.slice(0, mostrados).map(r => (
-                    <RestaurantCard
-                      key={r.id}
-                      restaurante={r}
-                      esFavorito={favoritos.includes(r.id)}
-                      onToggleFavorito={() => toggleFavorito(r.id)}
-                      onClick={() => abrirModal(r)}
-                    />
-                  ))}
-                </div>
-                {filtrados.length > mostrados && (
-                  <div style={{ textAlign: 'center', marginTop: 32 }}>
-                    <button className="btn btn--outline" onClick={() => setMostrados(m => m + 24)}>
-                      Mostrar {Math.min(24, filtrados.length - mostrados)} más
-                    </button>
-                  </div>
-                )}
-              </>
+            <div className="cards-grid">
+              {filtrados.slice(0, mostrados).map(r => (
+                <RestaurantCard
+                  key={r.id}
+                  restaurante={r}
+                  esFavorito={favoritos.includes(r.id)}
+                  onToggleFavorito={() => toggleFavorito(r.id)}
+                  onClick={() => abrirModal(r)}
+                />
+              ))}
+            </div>
+            {filtrados.length > mostrados && (
+              <div style={{ textAlign: 'center', marginTop: 32 }}>
+                <button className="btn btn--outline" onClick={() => setMostrados(m => m + 24)}>
+                  Mostrar {Math.min(24, filtrados.length - mostrados)} más
+                </button>
+              </div>
             )}
           </>
         )}

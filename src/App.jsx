@@ -13,7 +13,7 @@ import PerfilPanel from './PerfilPanel';
 import RestauranteModal from './RestauranteModal';
 import { supabase } from './supabase';
 import { useSwipeClose } from './useSwipeClose';
-import { mapearRestaurante } from './utils';
+import { mapearRestaurante, normalizar } from './utils';
 
 function App() {
   const ridInicial = useRef(
@@ -217,8 +217,9 @@ function App() {
   const chips = [...new Set(restaurantes.flatMap(r => r.tipo))].sort();
 
   const filtradosSinBarrio = restaurantes.filter(r => {
-    const coincideCiudad = ciudadDebounced === "" || r.ciudad.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.barrio.toLowerCase().includes(ciudadDebounced.toLowerCase()) || r.nombre.toLowerCase().includes(ciudadDebounced.toLowerCase());
-    const coincideTipo = tipoDebounced === "" || r.tipo.some(t => t.toLowerCase().includes(tipoDebounced.toLowerCase()));
+    const q = normalizar(ciudadDebounced);
+    const coincideCiudad = q === "" || normalizar(r.ciudad).includes(q) || normalizar(r.barrio).includes(q) || normalizar(r.nombre).includes(q);
+    const coincideTipo = tipoDebounced === "" || r.tipo.some(t => normalizar(t).includes(normalizar(tipoDebounced)));
     const coincidePrecio = precio === "" || r.precioMedio <= parseInt(precio);
     const coincideChip = chipsActivos.length === 0 || chipsActivos.some(chip => r.tipo.includes(chip));
     return coincideCiudad && coincideTipo && coincidePrecio && coincideChip;

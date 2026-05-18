@@ -1,3 +1,7 @@
+export function normalizar(str) {
+  return (str ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
 export function mapearRestaurante(r) {
   return {
     id: r.id,

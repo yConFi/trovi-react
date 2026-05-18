@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './supabase';
+import { normalizar } from './utils';
 import CropperModal from './CropperModal';
 
 const inputStyle = {
@@ -317,10 +318,11 @@ function PanelCoordenadas({ onVolver }) {
   }
 
   const sinCoords = restaurantes.filter(r => !r.lat || !r.lng);
+  const q = normalizar(busqueda);
   const restaurantesFiltrados = restaurantes.filter(r =>
-    r.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    r.ciudad?.toLowerCase().includes(busqueda.toLowerCase()) ||
-    r.barrio?.toLowerCase().includes(busqueda.toLowerCase())
+    normalizar(r.nombre).includes(q) ||
+    normalizar(r.ciudad).includes(q) ||
+    normalizar(r.barrio).includes(q)
   );
 
   return (

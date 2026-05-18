@@ -45,45 +45,9 @@ function App() {
   const [orden, setOrden] = useState("");
   const [comoFuncionaAbierto, setComoFuncionaAbierto] = useState(false);
   const [linkCopiado, setLinkCopiado] = useState(false);
-  const [destacadosExpandido, setDestacadosExpandido] = useState(true);
   const [mostrados, setMostrados] = useState(24);
 
   const comoFuncionaSwipe = useSwipeClose(() => setComoFuncionaAbierto(false));
-  const scrollRef = useRef(null);
-  const isDragging = useRef(false);
-  const dragStartX = useRef(0);
-  const scrollStartX = useRef(0);
-
-  const didDrag = useRef(false);
-
-  function onScrollMouseDown(e) {
-    e.preventDefault();
-    isDragging.current = true;
-    didDrag.current = false;
-    dragStartX.current = e.pageX;
-    scrollStartX.current = scrollRef.current.scrollLeft;
-    scrollRef.current.style.cursor = 'grabbing';
-    scrollRef.current.style.userSelect = 'none';
-  }
-
-  function onScrollMouseMove(e) {
-    if (!isDragging.current) return;
-    const dx = e.pageX - dragStartX.current;
-    if (Math.abs(dx) > 5) didDrag.current = true;
-    scrollRef.current.scrollLeft = scrollStartX.current - dx;
-  }
-
-  function onScrollMouseUp() {
-    isDragging.current = false;
-    if (scrollRef.current) {
-      scrollRef.current.style.cursor = 'grab';
-      scrollRef.current.style.userSelect = '';
-    }
-  }
-
-  function onScrollClick(e) {
-    if (didDrag.current) e.stopPropagation();
-  }
 
   useEffect(() => {
     const anyOpen = !!(restauranteActivo || comoFuncionaAbierto || editandoRestaurante || adminAbierto || perfilAbierto || modalPropuestaAbierto || modalAuthAbierto);
@@ -388,58 +352,6 @@ function App() {
         </section>
       )}
 
-      {restaurantes.length > 0 && (
-        <section className="destacados">
-          <div className="container">
-            <button
-              className="destacados__header"
-              onClick={() => setDestacadosExpandido(v => !v)}
-            >
-              <h2 className="destacados__titulo">
-                <span className="destacados__pulse" />
-                Recién añadidos
-                <svg
-                  width="14" height="14" viewBox="0 0 24 24" fill="none"
-                  stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                  style={{ transform: destacadosExpandido ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease', flexShrink: 0 }}
-                >
-                  <polyline points="18 15 12 9 6 15"/>
-                </svg>
-              </h2>
-            </button>
-            <p className="destacados__subtitulo">Los últimos sitios en llegar a Trovi</p>
-          </div>
-          {destacadosExpandido && (
-            <div className="destacados__scroll-wrap">
-              <div
-              className="destacados__scroll"
-              ref={scrollRef}
-              style={{ cursor: 'grab' }}
-              onMouseDown={onScrollMouseDown}
-              onMouseMove={onScrollMouseMove}
-              onMouseUp={onScrollMouseUp}
-              onMouseLeave={onScrollMouseUp}
-              onClickCapture={onScrollClick}
-            >
-                {[...restaurantes]
-                  .sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn))
-                  .slice(0, 8)
-                  .map(r => (
-                  <div key={r.id} className="destacados__card">
-                    <RestaurantCard
-                      restaurante={r}
-                      esFavorito={favoritos.includes(r.id)}
-                      esVisitado={visitados.includes(r.id)}
-                      onToggleFavorito={() => toggleFavorito(r.id)}
-                      onClick={() => abrirModal(r)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-      )}
 
       <main id="resultados" className="container results">
         {filtrados.length > 0 && (

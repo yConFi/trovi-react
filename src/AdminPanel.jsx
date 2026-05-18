@@ -264,6 +264,7 @@ function PanelCoordenadas({ onVolver }) {
   const [progreso, setProgreso] = useState({});
   const [corrigiendo, setCorrigiendo] = useState(null);
   const [queryCorreccion, setQueryCorreccion] = useState('');
+  const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => {
     supabase.from('restaurantes').select('id, nombre, direccion, barrio, ciudad, lat, lng')
@@ -316,6 +317,11 @@ function PanelCoordenadas({ onVolver }) {
   }
 
   const sinCoords = restaurantes.filter(r => !r.lat || !r.lng);
+  const restaurantesFiltrados = restaurantes.filter(r =>
+    r.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+    r.ciudad?.toLowerCase().includes(busqueda.toLowerCase()) ||
+    r.barrio?.toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   return (
     <div>
@@ -339,7 +345,13 @@ function PanelCoordenadas({ onVolver }) {
       </div>
       {cargando ? <p style={{ color: '#6b7280' }}>Cargando…</p> : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {restaurantes.map(r => {
+          <input
+            style={{ ...inputStyle, marginBottom: 4 }}
+            placeholder="Buscar por nombre, ciudad o barrio…"
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+          />
+          {restaurantesFiltrados.map(r => {
             const estado = progreso[r.id];
             const tieneCoords = r.lat && r.lng;
             const estaCorrigiendo = corrigiendo === r.id;

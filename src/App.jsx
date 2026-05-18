@@ -120,8 +120,7 @@ function App() {
   }
 
   async function cargarVisitados(userId) {
-    const tresDiasAtras = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
-    const { data } = await supabase.from('visitados').select('restaurante_id').eq('user_id', userId).gte('created_at', tresDiasAtras);
+    const { data } = await supabase.from('visitados').select('restaurante_id').eq('user_id', userId);
     setVisitados(data ? data.map(v => v.restaurante_id) : []);
   }
 

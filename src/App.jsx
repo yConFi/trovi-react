@@ -28,6 +28,8 @@ function App() {
   const [adminAbierto, setAdminAbierto] = useState(false);
   const [perfilAbierto, setPerfilAbierto] = useState(false);
   const [favoritos, setFavoritos] = useState([]);
+  const [visitados, setVisitados] = useState([]);
+  const [ocultarVisitados, setOcultarVisitados] = useState(false);
   const [miValoracion, setMiValoracion] = useState(null);
 
   const esAdmin = usuario?.email === 'rickybejarano@hotmail.com';
@@ -106,8 +108,8 @@ function App() {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       const u = session?.user ?? null;
       setUsuario(u);
-      if (u) cargarFavoritos(u.id);
-      else setFavoritos([]);
+      if (u) { cargarFavoritos(u.id); cargarVisitados(u.id); }
+      else { setFavoritos([]); setVisitados([]); }
     });
     return () => listener.subscription.unsubscribe();
   }, []);
@@ -115,6 +117,22 @@ function App() {
   async function cargarFavoritos(userId) {
     const { data } = await supabase.from('favoritos').select('restaurante_id').eq('user_id', userId);
     setFavoritos(data ? data.map(f => f.restaurante_id) : []);
+  }
+
+  async function cargarVisitados(userId) {
+    const { data } = await supabase.from('visitados').select('restaurante_id').eq('user_id', userId);
+    setVisitados(data ? data.map(v => v.restaurante_id) : []);
+  }
+
+  async function toggleVisitado(restauranteId) {
+    if (!usuario) { setModalAuthAbierto(true); return; }
+    if (visitados.includes(restauranteId)) {
+      await supabase.from('visitados').delete().eq('user_id', usuario.id).eq('restaurante_id', restauranteId);
+      setVisitados(prev => prev.filter(id => id !== restauranteId));
+    } else {
+      await supabase.from('visitados').insert({ user_id: usuario.id, restaurante_id: restauranteId });
+      setVisitados(prev => [...prev, restauranteId]);
+    }
   }
 
   async function abrirModal(restaurante) {
@@ -230,7 +248,8 @@ function App() {
   const filtrados = (barrioActivo
     ? filtradosSinBarrio.filter(r => r.barrio === barrioActivo)
     : filtradosSinBarrio
-  ).sort((a, b) => {
+  ).filter(r => !ocultarVisitados || !visitados.includes(r.id))
+  .sort((a, b) => {
     if (orden === "valoracion") return (parseFloat(b.valoracion) || 0) - (parseFloat(a.valoracion) || 0);
     if (orden === "precio") return (a.precioMedio || 0) - (b.precioMedio || 0);
     if (orden === "precio-desc") return (b.precioMedio || 0) - (a.precioMedio || 0);
@@ -239,7 +258,7 @@ function App() {
 
   useEffect(() => {
     setMostrados(24);
-  }, [ciudadDebounced, tipoDebounced, precio, chipsActivos, barrioActivo, orden]);
+  }, [ciudadDebounced, tipoDebounced, precio, chipsActivos, barrioActivo, orden, ocultarVisitados]);
 
   function sorprendeme() {
     if (filtrados.length === 0) return;
@@ -333,6 +352,14 @@ function App() {
               {chip}
             </button>
           ))}
+          {usuario && visitados.length > 0 && (
+            <button
+              className={`filter-chip${ocultarVisitados ? ' filter-chip--active' : ''}`}
+              onClick={() => setOcultarVisitados(v => !v)}
+            >
+              Ocultar visitados ({visitados.length})
+            </button>
+          )}
           {hayFiltros && (
             <button
               onClick={limpiar}
@@ -531,6 +558,7 @@ function App() {
         <RestauranteModal
           restaurante={restauranteActivo}
           favoritos={favoritos}
+          visitados={visitados}
           usuario={usuario}
           esAdmin={esAdmin}
           miValoracion={miValoracion}
@@ -539,6 +567,7 @@ function App() {
           onCompartir={compartir}
           onValorar={valorar}
           onToggleFavorito={toggleFavorito}
+          onToggleVisitado={toggleVisitado}
           onEditar={() => setEditandoRestaurante(true)}
           onLoginClick={() => setModalAuthAbierto(true)}
         />

@@ -68,11 +68,12 @@ function ModalCarrusel({ restaurante }) {
   );
 }
 
-function RestauranteModal({ restaurante, favoritos, usuario, esAdmin, miValoracion, linkCopiado, onCerrar, onCompartir, onValorar, onToggleFavorito, onEditar, onLoginClick }) {
+function RestauranteModal({ restaurante, favoritos, visitados, usuario, esAdmin, miValoracion, linkCopiado, onCerrar, onCompartir, onValorar, onToggleFavorito, onToggleVisitado, onEditar, onLoginClick }) {
   const modalRef = useRef(null);
   const touchStartY = useRef(0);
   const dragOffset = useRef(0);
   const esFavorito = favoritos.includes(restaurante.id);
+  const esVisitado = visitados?.includes(restaurante.id);
 
   useEffect(() => {
     if (modalRef.current) modalRef.current.style.transform = '';
@@ -195,6 +196,33 @@ function RestauranteModal({ restaurante, favoritos, usuario, esAdmin, miValoraci
             usuario={usuario}
             onLoginClick={onLoginClick}
           />
+          <button
+            onClick={() => onToggleVisitado(restaurante.id)}
+            style={{
+              marginTop: 16,
+              width: '100%',
+              padding: '10px',
+              borderRadius: 10,
+              border: '1.5px solid',
+              borderColor: esVisitado ? '#10b981' : '#e5e7eb',
+              background: esVisitado ? '#f0fdf4' : 'white',
+              color: esVisitado ? '#10b981' : '#6b7280',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            {esVisitado && (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            )}
+            {esVisitado ? 'Ya lo conozco' : 'Ya lo conozco'}
+          </button>
         </div>
       </div>
     </div>

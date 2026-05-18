@@ -40,6 +40,7 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
   const usernameActual = usuario.user_metadata?.username ?? '';
   const [propuestas, setPropuestas] = useState([]);
   const [restaurantesFav, setRestaurantesFav] = useState([]);
+  const [restaurantesVisitados, setRestaurantesVisitados] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [editandoPerfil, setEditandoPerfil] = useState(false);
   const [nuevoNombre, setNuevoNombre] = useState(nombreActual);
@@ -51,24 +52,27 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
 
   useEffect(() => {
     async function cargar() {
-      const [{ data: props }, { data: favs }] = await Promise.all([
+      const [{ data: props }, { data: favs }, { data: visits }] = await Promise.all([
         supabase.from('propuestas').select('*').eq('user_id', usuario.id).order('created_at', { ascending: false }),
         supabase.from('favoritos').select('restaurantes(*)').eq('user_id', usuario.id),
+        supabase.from('visitados').select('restaurantes(*)').eq('user_id', usuario.id),
       ]);
+      const mapear = r => ({
+        id: r.id,
+        nombre: r.nombre,
+        emoji: r.emoji,
+        tipo: r.tipo,
+        valoracion: r.valoracion,
+        numValoraciones: r.num_valoraciones,
+        ciudad: r.ciudad,
+        barrio: r.barrio,
+        precio: r.precio,
+        fotoUrl: r.foto_url,
+        precioMedio: r.precio_medio,
+      });
       setPropuestas(props ?? []);
-      setRestaurantesFav(favs ? favs.map(f => ({
-        id: f.restaurantes.id,
-        nombre: f.restaurantes.nombre,
-        emoji: f.restaurantes.emoji,
-        tipo: f.restaurantes.tipo,
-        valoracion: f.restaurantes.valoracion,
-        numValoraciones: f.restaurantes.num_valoraciones,
-        ciudad: f.restaurantes.ciudad,
-        barrio: f.restaurantes.barrio,
-        precio: f.restaurantes.precio,
-        fotoUrl: f.restaurantes.foto_url,
-        precioMedio: f.restaurantes.precio_medio,
-      })) : []);
+      setRestaurantesFav(favs ? favs.map(f => mapear(f.restaurantes)) : []);
+      setRestaurantesVisitados(visits ? visits.map(v => mapear(v.restaurantes)) : []);
       setCargando(false);
     }
     cargar();
@@ -168,6 +172,24 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: 16 }}>Mis favoritos</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginBottom: 40 }}>
               {restaurantesFav.map(r => (
+                <RestaurantCard
+                  key={r.id}
+                  restaurante={r}
+                  esFavorito={favoritos.includes(r.id)}
+                  onToggleFavorito={() => onToggleFavorito(r.id)}
+                  onClick={() => onVerRestaurante(r)}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Visitados */}
+        {restaurantesVisitados.length > 0 && (
+          <>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: 16 }}>Ya los conozco</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginBottom: 40 }}>
+              {restaurantesVisitados.map(r => (
                 <RestaurantCard
                   key={r.id}
                   restaurante={r}

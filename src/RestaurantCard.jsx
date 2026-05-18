@@ -1,5 +1,6 @@
 function RestaurantCard({ restaurante, onClick, esFavorito, esVisitado, onToggleFavorito }) {
-  const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio, precioMedio, fotoUrl, propuestoPor } = restaurante;
+  const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio, precioMedio, fotoUrl, propuestoPor, creadoEn } = restaurante;
+  const esNuevo = numValoraciones === 0 && creadoEn && (Date.now() - new Date(creadoEn).getTime()) < 3 * 24 * 60 * 60 * 1000;
 
   return (
     <article className="card" onClick={onClick}>
@@ -32,9 +33,9 @@ function RestaurantCard({ restaurante, onClick, esFavorito, esVisitado, onToggle
               <div className="card__rating">
                 ★ {valoracion} <span style={{ color: '#9ca3af', fontWeight: 400 }}>({numValoraciones})</span>
               </div>
-            ) : (
+            ) : esNuevo ? (
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#10b981', background: '#d1fae5', padding: '3px 8px', borderRadius: 999 }}>Nuevo</span>
-            )}
+            ) : null}
             <button
               onClick={e => { e.stopPropagation(); onToggleFavorito(); }}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1, display: 'flex', alignItems: 'center' }}

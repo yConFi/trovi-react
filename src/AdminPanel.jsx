@@ -238,11 +238,116 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
   );
 }
 
+async function geocodificar(nombre, direccion, barrio, ciudad) {
+  const query = [nombre, direccion, barrio, ciudad].filter(Boolean).join(', ');
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=es`;
+  const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
+  const data = await res.json();
+  if (data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  return null;
+}
+
+function PanelCoordenadas({ onVolver }) {
+  const [restaurantes, setRestaurantes] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [progreso, setProgreso] = useState({});
+
+  useEffect(() => {
+    supabase.from('restaurantes').select('id, nombre, direccion, barrio, ciudad, lat, lng')
+      .order('nombre').then(({ data }) => {
+        setRestaurantes(data ?? []);
+        setCargando(false);
+      });
+  }, []);
+
+  async function geocodificarUno(r) {
+    setProgreso(p => ({ ...p, [r.id]: 'cargando' }));
+    const coords = await geocodificar(r.nombre, r.direccion, r.barrio, r.ciudad);
+    if (coords) {
+      await supabase.from('restaurantes').update({ lat: coords.lat, lng: coords.lng }).eq('id', r.id);
+      setRestaurantes(prev => prev.map(x => x.id === r.id ? { ...x, ...coords } : x));
+      setProgreso(p => ({ ...p, [r.id]: 'ok' }));
+    } else {
+      setProgreso(p => ({ ...p, [r.id]: 'error' }));
+    }
+  }
+
+  async function geocodificarTodos() {
+    const sinCoords = restaurantes.filter(r => !r.lat || !r.lng);
+    for (const r of sinCoords) {
+      await geocodificarUno(r);
+      await new Promise(res => setTimeout(res, 1100));
+    }
+  }
+
+  const sinCoords = restaurantes.filter(r => !r.lat || !r.lng);
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#111827' }}>Coordenadas del mapa</h2>
+          <p style={{ color: '#6b7280', fontSize: '0.85rem', marginTop: 2 }}>
+            {restaurantes.length - sinCoords.length} de {restaurantes.length} con ubicación
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          {sinCoords.length > 0 && (
+            <button className="btn btn--primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={geocodificarTodos}>
+              Geocodificar todos ({sinCoords.length})
+            </button>
+          )}
+          <button className="btn btn--outline" style={{ padding: '8px 16px', fontSize: '0.85rem' }} onClick={onVolver}>
+            ← Volver
+          </button>
+        </div>
+      </div>
+      {cargando ? <p style={{ color: '#6b7280' }}>Cargando…</p> : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {restaurantes.map(r => {
+            const estado = progreso[r.id];
+            const tieneCoords = r.lat && r.lng;
+            return (
+              <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '12px 16px' }}>
+                <div>
+                  <p style={{ fontWeight: 600, fontSize: '0.9rem', color: '#111827' }}>{r.nombre}</p>
+                  <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: 2 }}>
+                    {[r.direccion, r.barrio, r.ciudad].filter(Boolean).join(', ')}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                  {tieneCoords && !estado && (
+                    <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600 }}>✓ {r.lat?.toFixed(4)}, {r.lng?.toFixed(4)}</span>
+                  )}
+                  {estado === 'ok' && <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600 }}>✓ Guardado</span>}
+                  {estado === 'error' && <span style={{ fontSize: '0.78rem', color: '#ef4444', fontWeight: 600 }}>Sin resultados</span>}
+                  {estado === 'cargando' && <span style={{ fontSize: '0.78rem', color: '#9ca3af' }}>Buscando…</span>}
+                  {!tieneCoords && estado !== 'ok' && (
+                    <button
+                      className="btn btn--outline"
+                      style={{ padding: '5px 12px', fontSize: '0.78rem' }}
+                      onClick={() => geocodificarUno(r)}
+                      disabled={estado === 'cargando'}
+                    >
+                      Geocodificar
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AdminPanel({ onClose, onPublicado }) {
   const [propuestas, setPropuestas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [propuestaEditando, setPropuestaEditando] = useState(null);
   const [añadiendoNuevo, setAñadiendoNuevo] = useState(false);
+  const [gestionandoCoordenadas, setGestionandoCoordenadas] = useState(false);
 
   useEffect(() => {
     cargarPropuestas();
@@ -328,17 +433,24 @@ function AdminPanel({ onClose, onPublicado }) {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             {!añadiendoNuevo && (
-              <button className="btn btn--primary" style={{ padding: '8px 18px', fontSize: '0.85rem' }} onClick={() => setAñadiendoNuevo(true)}>
-                + Añadir
-              </button>
+              <>
+                <button className="btn btn--outline" style={{ padding: '8px 18px', fontSize: '0.85rem' }} onClick={() => setGestionandoCoordenadas(true)}>
+                  Coordenadas
+                </button>
+                <button className="btn btn--primary" style={{ padding: '8px 18px', fontSize: '0.85rem' }} onClick={() => setAñadiendoNuevo(true)}>
+                  + Añadir
+                </button>
+              </>
             )}
             <button className="btn btn--outline" onClick={añadiendoNuevo ? () => setAñadiendoNuevo(false) : onClose}>
-              {añadiendoNuevo ? '← Volver' : '← Volver'}
+              ← Volver
             </button>
           </div>
         </div>
 
-        {añadiendoNuevo ? (
+        {gestionandoCoordenadas ? (
+          <PanelCoordenadas onVolver={() => setGestionandoCoordenadas(false)} />
+        ) : añadiendoNuevo ? (
           <FormularioRestaurante
             onPublicar={añadirDirecto}
             onCancelar={() => setAñadiendoNuevo(false)}

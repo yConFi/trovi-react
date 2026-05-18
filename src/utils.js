@@ -18,5 +18,7 @@ export function mapearRestaurante(r) {
     fotosUrls: Array.isArray(r.fotos_urls) ? r.fotos_urls.filter(Boolean) : [],
     creadoEn: r.created_at,
     propuestoPor: r.propuesto_por ?? null,
+    lat: r.lat ?? null,
+    lng: r.lng ?? null,
   };
 }

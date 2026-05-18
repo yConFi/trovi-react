@@ -239,11 +239,22 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
 }
 
 async function geocodificar(nombre, direccion, barrio, ciudad) {
-  const query = [nombre, direccion, barrio, ciudad].filter(Boolean).join(', ');
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=es`;
-  const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
-  const data = await res.json();
-  if (data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  const intentos = [
+    [nombre, direccion, barrio, ciudad].filter(Boolean).join(', '),
+    [nombre, barrio, ciudad].filter(Boolean).join(', '),
+    [barrio, ciudad, 'España'].filter(Boolean).join(', '),
+    [ciudad, 'España'].filter(Boolean).join(', '),
+  ].filter(Boolean);
+
+  for (const query of intentos) {
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    } catch {}
+    await new Promise(r => setTimeout(r, 600));
+  }
   return null;
 }
 

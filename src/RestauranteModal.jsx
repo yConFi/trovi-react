@@ -151,10 +151,6 @@ function RestauranteModal({ restaurante, favoritos, usuario, esAdmin, miValoraci
           <p className="modal__descripcion">{restaurante.descripcion}</p>
           <div className="modal__info">
             <div className="modal__info-item">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-              <span>{restaurante.direccion}</span>
-            </div>
-            <div className="modal__info-item">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               <span>{restaurante.horario}</span>
             </div>

@@ -79,33 +79,48 @@ function RestauranteModal({ restaurante, favoritos, usuario, esAdmin, miValoraci
     dragOffset.current = 0;
   }, [restaurante]);
 
-  function onTouchStart(e) {
-    touchStartY.current = e.touches[0].clientY;
-  }
+  useEffect(() => {
+    const el = modalRef.current;
+    if (!el) return;
 
-  function onTouchMove(e) {
-    const delta = e.touches[0].clientY - touchStartY.current;
-    if (delta > 0 && modalRef.current?.scrollTop === 0) {
-      dragOffset.current = delta;
-      modalRef.current.style.transform = `translateY(${delta}px)`;
-      modalRef.current.style.transition = 'none';
-    }
-  }
+    const handleTouchStart = (e) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
 
-  function onTouchEnd() {
-    const limit = (modalRef.current?.offsetHeight ?? window.innerHeight) * 0.3;
-    if (dragOffset.current > limit) {
-      onCerrar();
-    } else if (modalRef.current) {
-      modalRef.current.style.transform = '';
-      modalRef.current.style.transition = 'transform 0.3s ease';
-    }
-    dragOffset.current = 0;
-  }
+    const handleTouchMove = (e) => {
+      const delta = e.touches[0].clientY - touchStartY.current;
+      if (delta > 0 && el.scrollTop === 0) {
+        e.preventDefault();
+        dragOffset.current = delta;
+        el.style.transform = `translateY(${delta}px)`;
+        el.style.transition = 'none';
+      }
+    };
+
+    const handleTouchEnd = () => {
+      const limit = el.offsetHeight * 0.3;
+      if (dragOffset.current > limit) {
+        onCerrar();
+      } else {
+        el.style.transform = '';
+        el.style.transition = 'transform 0.3s ease';
+      }
+      dragOffset.current = 0;
+    };
+
+    el.addEventListener('touchstart', handleTouchStart, { passive: true });
+    el.addEventListener('touchmove', handleTouchMove, { passive: false });
+    el.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      el.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('touchmove', handleTouchMove);
+      el.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [onCerrar]);
 
   return (
     <div className="modal-overlay modal-overlay--open" onClick={e => e.target === e.currentTarget && onCerrar()}>
-      <div className="modal" ref={modalRef} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+      <div className="modal" ref={modalRef}>
         <button className="modal__close" onClick={onCerrar}>✕</button>
         {esAdmin && (
           <button className="modal__action-btn modal__action-btn--editar" onClick={onEditar}>

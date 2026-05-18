@@ -1018,11 +1018,27 @@ a {
   }
 
   .destacados__card {
-    min-width: 200px;
+    min-width: 190px;
   }
 
   .destacados__card .card__image {
-    height: 130px;
+    height: 120px;
+  }
+
+  .destacados__card .card__body {
+    padding: 8px 10px 10px;
+  }
+
+  .destacados__card .card__name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .destacados__card .card__tags {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    max-height: 22px;
   }
 
   .search-bar__field input,

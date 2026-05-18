@@ -241,6 +241,12 @@ function App() {
     setMostrados(24);
   }, [ciudadDebounced, tipoDebounced, precio, chipsActivos, barrioActivo, orden]);
 
+  function sorprendeme() {
+    if (filtrados.length === 0) return;
+    const r = filtrados[Math.floor(Math.random() * filtrados.length)];
+    abrirModal(r);
+  }
+
   function limpiar() {
     setCiudad("");
     setTipo("");
@@ -410,9 +416,20 @@ function App() {
       <main id="resultados" className="container results">
         {filtrados.length > 0 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <p style={{ fontSize: '0.9rem', color: '#6b7280' }}>
-              <span style={{ fontWeight: 600, color: '#111827' }}>{filtrados.length}</span> {filtrados.length === 1 ? 'sitio encontrado' : 'sitios encontrados'}
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <p style={{ fontSize: '0.9rem', color: '#6b7280' }}>
+                <span style={{ fontWeight: 600, color: '#111827' }}>{filtrados.length}</span> {filtrados.length === 1 ? 'sitio encontrado' : 'sitios encontrados'}
+              </p>
+              {filtrados.length > 1 && (
+                <button
+                  onClick={sorprendeme}
+                  className="btn btn--outline"
+                  style={{ fontSize: '0.8rem', padding: '5px 12px', whiteSpace: 'nowrap' }}
+                >
+                  Sorpréndeme
+                </button>
+              )}
+            </div>
             <OrdenDropdown value={orden} onChange={setOrden} />
           </div>
         )}

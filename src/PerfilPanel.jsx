@@ -83,12 +83,25 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
     if (!usernameClean) { setErrorPerfil('El nombre de usuario no puede estar vacío.'); return; }
     setGuardandoPerfil(true);
     setErrorPerfil('');
+    if (usernameClean !== usernameActual) {
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('username', usernameClean)
+        .maybeSingle();
+      if (existing) {
+        setErrorPerfil('Ese nombre de usuario ya está en uso.');
+        setGuardandoPerfil(false);
+        return;
+      }
+    }
     const { error } = await supabase.auth.updateUser({
       data: { nombre: nuevoNombre.trim() || null, username: usernameClean },
     });
     if (error) {
       setErrorPerfil('No se pudo guardar. Inténtalo de nuevo.');
     } else {
+      await supabase.from('profiles').upsert({ user_id: usuario.id, username: usernameClean });
       setEditandoPerfil(false);
     }
     setGuardandoPerfil(false);

@@ -74,6 +74,16 @@ function AuthModal({ onClose, onAuth }) {
         setCargando(false);
         return;
       }
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('username', usernameClean)
+        .maybeSingle();
+      if (existingProfile) {
+        setError('Ese nombre de usuario ya está en uso.');
+        setCargando(false);
+        return;
+      }
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -82,6 +92,7 @@ function AuthModal({ onClose, onAuth }) {
       if (error) {
         setError('No se pudo crear la cuenta. Prueba con otro email.');
       } else {
+        await supabase.from('profiles').insert({ user_id: data.user.id, username: usernameClean });
         onAuth(data.user);
         onClose();
       }

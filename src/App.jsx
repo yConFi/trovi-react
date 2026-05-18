@@ -105,6 +105,7 @@ function App() {
     setRestauranteActivo(restaurante);
     setMiValoracion(null);
     setMiComentario('');
+    setResenas([]);
     setLinkCopiado(false);
     window.history.replaceState(null, '', `/r/${restaurante.id}`);
 

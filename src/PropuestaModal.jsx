@@ -16,8 +16,8 @@ function PropuestaModal({ usuario, onClose }) {
   const [cargando, setCargando] = useState(false);
 
   async function handleSubirFotos(e) {
-    const files = Array.from(e.target.files).slice(0, 5 - fotosUrls.length);
-    if (!files.length) return;
+    const files = Array.from(e.target.files).filter(f => f.size <= 5 * 1024 * 1024).slice(0, 5 - fotosUrls.length);
+    if (!files.length) { setError('Cada foto debe pesar menos de 5MB.'); e.target.value = ''; return; }
     setSubiendoFoto(true);
     const nuevas = [];
     for (const file of files) {

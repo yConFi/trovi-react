@@ -75,6 +75,7 @@ function FormularioRestaurante({ propuesta = {}, onPublicar, onCancelar, textoBo
   async function handleSubirFotoAdicional(e) {
     const file = e.target.files[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { setErrorFotoAdicional(true); e.target.value = ''; return; }
     setSubiendoFotoAdicional(true);
     setErrorFotoAdicional(false);
     const ext = file.name.split('.').pop();

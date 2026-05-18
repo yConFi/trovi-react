@@ -71,8 +71,8 @@ function PerfilPanel({ usuario, onClose, favoritos, onToggleFavorito, onVerResta
         precioMedio: r.precio_medio,
       });
       setPropuestas(props ?? []);
-      setRestaurantesFav(favs ? favs.map(f => mapear(f.restaurantes)) : []);
-      setRestaurantesVisitados(visits ? visits.map(v => mapear(v.restaurantes)) : []);
+      setRestaurantesFav(favs ? favs.filter(f => f.restaurantes).map(f => mapear(f.restaurantes)) : []);
+      setRestaurantesVisitados(visits ? visits.filter(v => v.restaurantes).map(v => mapear(v.restaurantes)) : []);
       setCargando(false);
     }
     cargar();

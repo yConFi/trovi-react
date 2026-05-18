@@ -57,7 +57,7 @@ export default async function handler(req, res) {
   ${imagen ? `<meta name="twitter:image" content="${imagen}" />` : ''}
 </head>
 <body>
-  <script>window.location.href = "/?r=${id}";</script>
+  <script>window.location.href = "/?r=${esc(id)}";</script>
 </body>
 </html>`;
 

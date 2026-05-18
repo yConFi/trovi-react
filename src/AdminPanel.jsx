@@ -262,6 +262,8 @@ function PanelCoordenadas({ onVolver }) {
   const [restaurantes, setRestaurantes] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [progreso, setProgreso] = useState({});
+  const [corrigiendo, setCorrigiendo] = useState(null);
+  const [queryCorreccion, setQueryCorreccion] = useState('');
 
   useEffect(() => {
     supabase.from('restaurantes').select('id, nombre, direccion, barrio, ciudad, lat, lng')
@@ -271,8 +273,25 @@ function PanelCoordenadas({ onVolver }) {
       });
   }, []);
 
-  async function geocodificarUno(r) {
+  async function geocodificarConQuery(r, query) {
     setProgreso(p => ({ ...p, [r.id]: 'cargando' }));
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.length > 0) {
+        const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        await supabase.from('restaurantes').update({ lat: coords.lat, lng: coords.lng }).eq('id', r.id);
+        setRestaurantes(prev => prev.map(x => x.id === r.id ? { ...x, ...coords } : x));
+        setProgreso(p => ({ ...p, [r.id]: 'ok' }));
+        setCorrigiendo(null);
+        return;
+      }
+    } catch {}
+    setProgreso(p => ({ ...p, [r.id]: 'error' }));
+  }
+
+  async function geocodificarUno(r) {
     const coords = await geocodificar(r.nombre, r.direccion, r.barrio, r.ciudad);
     if (coords) {
       await supabase.from('restaurantes').update({ lat: coords.lat, lng: coords.lng }).eq('id', r.id);
@@ -289,6 +308,11 @@ function PanelCoordenadas({ onVolver }) {
       await geocodificarUno(r);
       await new Promise(res => setTimeout(res, 1100));
     }
+  }
+
+  function abrirCorreccion(r) {
+    setCorrigiendo(r.id);
+    setQueryCorreccion([r.nombre, r.barrio, r.ciudad].filter(Boolean).join(', '));
   }
 
   const sinCoords = restaurantes.filter(r => !r.lat || !r.lng);
@@ -318,32 +342,54 @@ function PanelCoordenadas({ onVolver }) {
           {restaurantes.map(r => {
             const estado = progreso[r.id];
             const tieneCoords = r.lat && r.lng;
+            const estaCorrigiendo = corrigiendo === r.id;
             return (
-              <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '12px 16px' }}>
-                <div>
-                  <p style={{ fontWeight: 600, fontSize: '0.9rem', color: '#111827' }}>{r.nombre}</p>
-                  <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: 2 }}>
-                    {[r.direccion, r.barrio, r.ciudad].filter(Boolean).join(', ')}
-                  </p>
+              <div key={r.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 10, padding: '12px 16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <p style={{ fontWeight: 600, fontSize: '0.9rem', color: '#111827' }}>{r.nombre}</p>
+                    <p style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: 2 }}>
+                      {[r.direccion, r.barrio, r.ciudad].filter(Boolean).join(', ')}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    {estado === 'cargando' && <span style={{ fontSize: '0.78rem', color: '#9ca3af' }}>Buscando…</span>}
+                    {estado === 'ok' && <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600 }}>✓ Guardado</span>}
+                    {estado === 'error' && <span style={{ fontSize: '0.78rem', color: '#ef4444', fontWeight: 600 }}>Sin resultados</span>}
+                    {tieneCoords && !estado && (
+                      <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600 }}>✓ {r.lat?.toFixed(4)}, {r.lng?.toFixed(4)}</span>
+                    )}
+                    {tieneCoords && estado !== 'cargando' && (
+                      <button className="btn btn--outline" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => abrirCorreccion(r)}>
+                        Corregir
+                      </button>
+                    )}
+                    {!tieneCoords && estado !== 'ok' && estado !== 'cargando' && (
+                      <button className="btn btn--outline" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => abrirCorreccion(r)}>
+                        Geocodificar
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                  {tieneCoords && !estado && (
-                    <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600 }}>✓ {r.lat?.toFixed(4)}, {r.lng?.toFixed(4)}</span>
-                  )}
-                  {estado === 'ok' && <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600 }}>✓ Guardado</span>}
-                  {estado === 'error' && <span style={{ fontSize: '0.78rem', color: '#ef4444', fontWeight: 600 }}>Sin resultados</span>}
-                  {estado === 'cargando' && <span style={{ fontSize: '0.78rem', color: '#9ca3af' }}>Buscando…</span>}
-                  {!tieneCoords && estado !== 'ok' && (
-                    <button
-                      className="btn btn--outline"
-                      style={{ padding: '5px 12px', fontSize: '0.78rem' }}
-                      onClick={() => geocodificarUno(r)}
-                      disabled={estado === 'cargando'}
-                    >
-                      Geocodificar
+                {estaCorrigiendo && (
+                  <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+                    <input
+                      style={{ ...inputStyle, flex: 1, fontSize: '0.85rem', padding: '7px 12px' }}
+                      value={queryCorreccion}
+                      onChange={e => setQueryCorreccion(e.target.value)}
+                      placeholder="Ej: Bar El Rinconcillo, Calle Gerona, Sevilla"
+                      onKeyDown={e => e.key === 'Enter' && geocodificarConQuery(r, queryCorreccion)}
+                    />
+                    <button className="btn btn--primary" style={{ padding: '7px 14px', fontSize: '0.82rem', whiteSpace: 'nowrap' }}
+                      onClick={() => geocodificarConQuery(r, queryCorreccion)} disabled={estado === 'cargando'}>
+                      Buscar
                     </button>
-                  )}
-                </div>
+                    <button className="btn btn--outline" style={{ padding: '7px 12px', fontSize: '0.82rem' }}
+                      onClick={() => setCorrigiendo(null)}>
+                      ✕
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}

@@ -167,8 +167,10 @@ function RestauranteModal({ restaurante, favoritos, usuario, esAdmin, miValoraci
               <a
                 href={(() => {
                   const query = encodeURIComponent([restaurante.nombre, restaurante.direccion, restaurante.barrio, restaurante.ciudad].filter(Boolean).join(', '));
-                  const esMobil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                  return esMobil ? `geo:0,0?q=${query}` : `https://www.google.com/maps/search/?api=1&query=${query}`;
+                  const ua = navigator.userAgent;
+                  if (/iPhone|iPad|iPod/i.test(ua)) return `https://maps.apple.com/?q=${query}`;
+                  if (/Android/i.test(ua)) return `geo:0,0?q=${query}`;
+                  return `https://www.google.com/maps/search/?api=1&query=${query}`;
                 })()}
                 target="_blank"
                 rel="noopener noreferrer"

@@ -8,14 +8,17 @@ function ModalCarrusel({ restaurante }) {
   ].filter(Boolean);
   const [idx, setIdx] = useState(0);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   function onCarruselTouchStart(e) {
-    e.stopPropagation();
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
   }
 
   function onCarruselTouchMove(e) {
-    e.stopPropagation();
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
+    const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
+    if (dx > dy) e.stopPropagation();
   }
 
   function onCarruselTouchEnd(e) {
@@ -90,7 +93,8 @@ function RestauranteModal({ restaurante, favoritos, usuario, esAdmin, miValoraci
   }
 
   function onTouchEnd() {
-    if (dragOffset.current > window.innerHeight * 0.5) {
+    const limit = (modalRef.current?.offsetHeight ?? window.innerHeight) * 0.3;
+    if (dragOffset.current > limit) {
       onCerrar();
     } else if (modalRef.current) {
       modalRef.current.style.transform = '';

@@ -962,12 +962,15 @@ a {
 
   .modal::before {
     content: '';
-    display: block;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 36px;
     height: 4px;
-    background: #e5e7eb;
+    background: rgba(255,255,255,0.6);
     border-radius: 999px;
-    margin: 12px auto 0;
+    z-index: 10;
   }
 
   .results {
@@ -1012,6 +1015,14 @@ a {
 
   .card__price {
     font-size: 0.75rem;
+  }
+
+  .destacados__card {
+    min-width: 200px;
+  }
+
+  .destacados__card .card__image {
+    height: 130px;
   }
 
   .search-bar__field input,

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Header from './Header';
 import RestaurantCard from './RestaurantCard';
 import PrecioDropdown from './PrecioDropdown';
@@ -592,6 +593,7 @@ function App() {
           onAuth={setUsuario}
         />
       )}
+      <Analytics />
     </div>
   );
 }

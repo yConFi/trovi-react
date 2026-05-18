@@ -1,13 +1,28 @@
-function RestaurantCard({ restaurante, onClick, esFavorito, onToggleFavorito }) {
+function RestaurantCard({ restaurante, onClick, esFavorito, esVisitado, onToggleFavorito }) {
   const { nombre, emoji, tipo, valoracion, numValoraciones, barrio, ciudad, precio, precioMedio, fotoUrl, propuestoPor } = restaurante;
-
 
   return (
     <article className="card" onClick={onClick}>
-      <div className="card__image">
+      <div className="card__image" style={{ position: 'relative' }}>
         {fotoUrl
           ? <img src={fotoUrl} alt={nombre} loading="lazy" draggable="false" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : emoji}
+        {esVisitado && (
+          <div style={{
+            position: 'absolute', top: 8, left: 8,
+            background: 'rgba(16, 185, 129, 0.88)',
+            color: 'white', fontSize: '0.68rem', fontWeight: 700,
+            padding: '3px 8px', borderRadius: 999,
+            display: 'flex', alignItems: 'center', gap: 4,
+            backdropFilter: 'blur(4px)',
+            letterSpacing: '0.02em',
+          }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Visitado
+          </div>
+        )}
       </div>
       <div className="card__body">
         <div className="card__header">

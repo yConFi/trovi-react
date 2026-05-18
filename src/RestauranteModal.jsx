@@ -68,7 +68,7 @@ function ModalCarrusel({ restaurante }) {
   );
 }
 
-function RestauranteModal({ restaurante, favoritos, visitados, usuario, esAdmin, miValoracion, linkCopiado, onCerrar, onCompartir, onValorar, onToggleFavorito, onToggleVisitado, onEditar, onLoginClick }) {
+function RestauranteModal({ restaurante, favoritos, visitados, usuario, esAdmin, miValoracion, miComentario, resenas, linkCopiado, onCerrar, onCompartir, onValorar, onToggleFavorito, onToggleVisitado, onEditar, onLoginClick }) {
   const modalRef = useRef(null);
   const touchStartY = useRef(0);
   const dragOffset = useRef(0);
@@ -190,8 +190,33 @@ function RestauranteModal({ restaurante, favoritos, visitados, usuario, esAdmin,
               </button>
             </div>
           </div>
+          {resenas?.length > 0 && (
+            <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #f3f4f6' }}>
+              <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#6b7280', marginBottom: 12 }}>
+                Lo que dicen
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {resenas.map((r, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#ff5c3a' }}>
+                        @{r.user_username ?? 'usuario'}
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: '#f59e0b', letterSpacing: 1 }}>
+                        {'★'.repeat(r.puntuacion)}{'☆'.repeat(5 - r.puntuacion)}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.5, margin: 0 }}>
+                      "{r.comentario}"
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <ValoracionEstrellas
             miValoracion={miValoracion}
+            miComentario={miComentario}
             onValorar={onValorar}
             usuario={usuario}
             onLoginClick={onLoginClick}

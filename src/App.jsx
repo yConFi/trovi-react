@@ -31,6 +31,8 @@ function App() {
   const [visitados, setVisitados] = useState([]);
   const [ocultarVisitados, setOcultarVisitados] = useState(false);
   const [miValoracion, setMiValoracion] = useState(null);
+  const [miComentario, setMiComentario] = useState('');
+  const [resenas, setResenas] = useState([]);
 
   const esAdmin = usuario?.email === 'rickybejarano@hotmail.com';
   const [ciudad, setCiudad] = useState("");
@@ -102,17 +104,22 @@ function App() {
   async function abrirModal(restaurante) {
     setRestauranteActivo(restaurante);
     setMiValoracion(null);
+    setMiComentario('');
     setLinkCopiado(false);
     window.history.replaceState(null, '', `/r/${restaurante.id}`);
-    if (usuario) {
-      const { data } = await supabase
-        .from('valoraciones')
-        .select('puntuacion')
-        .eq('user_id', usuario.id)
-        .eq('restaurante_id', restaurante.id)
-        .maybeSingle();
-      if (data) setMiValoracion(data.puntuacion);
+
+    const [{ data: miVal }, { data: resenasData }] = await Promise.all([
+      usuario
+        ? supabase.from('valoraciones').select('puntuacion, comentario').eq('user_id', usuario.id).eq('restaurante_id', restaurante.id).maybeSingle()
+        : Promise.resolve({ data: null }),
+      supabase.from('valoraciones').select('puntuacion, comentario, user_username').eq('restaurante_id', restaurante.id).not('comentario', 'is', null).neq('comentario', '').order('created_at', { ascending: false }).limit(5),
+    ]);
+
+    if (miVal) {
+      setMiValoracion(miVal.puntuacion);
+      setMiComentario(miVal.comentario ?? '');
     }
+    setResenas(resenasData ?? []);
   }
 
   function cerrarModal() {
@@ -138,15 +145,24 @@ function App() {
     }
   }
 
-  async function valorar(puntuacion) {
+  async function valorar(puntuacion, comentario) {
     if (!usuario) { setModalAuthAbierto(true); return false; }
     const { error } = await supabase.from('valoraciones').upsert({
       user_id: usuario.id,
       restaurante_id: restauranteActivo.id,
       puntuacion,
+      comentario: comentario?.trim() || null,
+      user_username: usuario.user_metadata?.username ?? null,
     }, { onConflict: 'user_id,restaurante_id' });
     if (error) return false;
     setMiValoracion(puntuacion);
+    setMiComentario(comentario?.trim() ?? '');
+    if (comentario?.trim()) {
+      setResenas(prev => {
+        const sinMia = prev.filter(r => r.user_username !== (usuario.user_metadata?.username ?? null));
+        return [{ puntuacion, comentario: comentario.trim(), user_username: usuario.user_metadata?.username ?? null }, ...sinMia].slice(0, 5);
+      });
+    }
 
     const { data } = await supabase
       .from('valoraciones')
@@ -476,6 +492,8 @@ function App() {
           usuario={usuario}
           esAdmin={esAdmin}
           miValoracion={miValoracion}
+          miComentario={miComentario}
+          resenas={resenas}
           linkCopiado={linkCopiado}
           onCerrar={cerrarModal}
           onCompartir={compartir}
